@@ -1,115 +1,66 @@
 @extends('layouts.app')
 
-@section('title', 'Users')
-
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
-@endpush
-
-@section('main')
-    <div class="main-content">
-        <section class="section">
-            <div class="section-header">
-                <h1>Users</h1>
-                <div class="section-header-button">
-                    <a href="{{ route('users.create') }}" class="btn btn-primary">Add New</a>
-                </div>
-                <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item"><a href="#">Users</a></div>
-                    <div class="breadcrumb-item">All Users</div>
-                </div>
-            </div>
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        @include('layouts.alert')
-                    </div>
-                </div>
-                <h2 class="section-title">Users</h2>
-                <p class="section-lead">
-                    You can manage all Users, such as editing, deleting and more.
-                </p>
-
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>All Posts</h4>
-                            </div>
-                            <div class="card-body">
-
-                                <div class="float-right">
-                                    <form method="GET" action="{{ route('users.index') }}">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search" name="name">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div class="clearfix mb-3"></div>
-
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
-                                        <tr>
-                                            <th>NISN</th>
-                                            <th>Nama</th>
-                                            <th>Kelas</th>
-                                            <th>Tahun Lulus</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                        @foreach ($users as $user)
-                                            <tr>
-                                                <td>{{ $user->nisn ?? '-' }}</td>
-                                                <td>{{ $user->name }}</td>
-                                                <td>{{ $user->kelas ?? '-' }}</td>
-                                                <td>{{ $user->tahun_lulus ?? '-' }}</td>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('users.edit', $user->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('users.destroy', $user->id) }}"
-                                                            method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token"
-                                                                value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-
-
-                                    </table>
-                                </div>
-                                <div class="float-right">
-                                    {{ $users->withQueryString()->links() }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+@section('content')
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <div>
+        <h2 class="mb-1">Manajemen Pengguna</h2>
+        <p class="text-secondary mb-0">Kelola akun pengguna sistem akademik.</p>
     </div>
+    <a href="{{ route('users.create') }}" class="btn btn-brand">+ Tambah Pengguna</a>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-12 col-md-6">
+        <form method="GET" action="{{ route('users.index') }}" class="d-flex gap-2">
+            <input type="text" name="name" placeholder="Cari nama pengguna..." class="form-control" value="{{ request('name') }}">
+            <button type="submit" class="btn btn-outline-primary">Cari</button>
+            @if(request('name'))
+                <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">Reset</a>
+            @endif
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Nama</th>
+                <th>Role</th>
+                <th>Posisi</th>
+                <th class="text-center">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($users as $user)
+                <tr>
+                    <td>{{ $user->email }}</td>
+                    <td class="fw-semibold">{{ $user->name }}</td>
+                    <td>{{ $user->role ?? '-' }}</td>
+                    <td>{{ $user->position ?? '-' }}</td>
+                    <td class="text-center">
+                        <div class="d-flex flex-wrap justify-content-center gap-2">
+                            <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                            <form action="{{ route('users.destroy', $user) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus pengguna ini?')">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center text-secondary py-4">Tidak ada pengguna ditemukan.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-3">
+    {{ $users->links() }}
+</div>
+
 @endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-    <script src="{{ asset('library/selectric/public/jquery.selectric.min.js') }}"></script>
-
-    <!-- Page Specific JS File -->
-    <script src="{{ asset('js/page/features-posts.js') }}"></script>
-@endpush

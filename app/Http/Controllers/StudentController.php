@@ -12,8 +12,19 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::paginate(10);
-        return view('students.index', compact('students'));
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+        $search = request('search');
+        
+        $query = Student::query();
+        
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%");
+        }
+        
+        $students = $query->orderBy($sort, $direction)->paginate(10)->appends(request()->query());
+        return view('students.index', compact('students', 'sort', 'direction', 'search'));
     }
 
     /**

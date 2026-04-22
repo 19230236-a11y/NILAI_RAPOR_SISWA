@@ -13,8 +13,19 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $teachers = Teacher::with('subject')->paginate(10);
-        return view('teachers.index', compact('teachers'));
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+        $search = request('search');
+        
+        $query = Teacher::with('subject');
+        
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%");
+        }
+        
+        $teachers = $query->orderBy($sort, $direction)->paginate(10)->appends(request()->query());
+        return view('teachers.index', compact('teachers', 'sort', 'direction', 'search'));
     }
 
     /**

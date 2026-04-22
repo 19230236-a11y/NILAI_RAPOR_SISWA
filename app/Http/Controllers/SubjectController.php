@@ -12,8 +12,18 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        $subjects = Subject::paginate(10);
-        return view('subjects.index', compact('subjects'));
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+        $search = request('search');
+        
+        $query = Subject::query();
+        
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+        
+        $subjects = $query->orderBy($sort, $direction)->paginate(10)->appends(request()->query());
+        return view('subjects.index', compact('subjects', 'sort', 'direction', 'search'));
     }
 
     /**

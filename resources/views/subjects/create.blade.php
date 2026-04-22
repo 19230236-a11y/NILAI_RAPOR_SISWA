@@ -1,15 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Add Subject</h1>
-    <form action="{{ route('subjects.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label>Subject Name</label>
-            <input type="text" name="name" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <div>
+        <h2 class="mb-1">Tambah Mata Pelajaran</h2>
+        <p class="text-secondary mb-0">Tambahkan mapel baru yang akan dipakai dalam sistem nilai.</p>
+    </div>
+    <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">Kembali</a>
 </div>
+
+@include('components.form-errors')
+
+<form action="{{ route('subjects.store') }}" method="POST" class="card border-0 shadow-sm">
+    <div class="card-body">
+        @csrf
+        <div class="mb-0">
+            <label for="name" class="form-label">Nama Mata Pelajaran</label>
+            <input id="name" type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" required>
+            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+    </div>
+    <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2">
+        <a href="{{ route('subjects.index') }}" class="btn btn-light border">Batal</a>
+        <button type="submit" class="btn btn-brand">Simpan</button>
+    </div>
+</form>
 @endsection
