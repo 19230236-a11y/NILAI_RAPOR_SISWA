@@ -1,23 +1,36 @@
-# NILAI RAPOR SISWA - Sistem Absensi Siswa
+# Sistem Informasi Pengarsipan dan Perhitungan Nilai Raport Siswa SMA
 
-Aplikasi web berbasis Laravel untuk mengelola absensi siswa, user management, dan laporan nilai rapor. Menggunakan autentikasi dengan Laravel Sanctum dan Fortify, serta integrasi Firebase untuk notifikasi.
+Aplikasi web berbasis Laravel 11 untuk mengelola pengarsipan nilai siswa dari kelas 10, 11, sampai 12 (6 semester) dengan perhitungan nilai akhir otomatis.
 
 ## Fitur Utama
 
-- **Manajemen User**: Registrasi, login, dan profil user dengan role-based access.
-- **Absensi**: Check-in/check-out dengan lokasi (latlon), waktu, dan integrasi face recognition.
-- **Perusahaan**: Manajemen data perusahaan.
-- **Izin**: Sistem permintaan izin.
-- **API**: RESTful API untuk mobile app.
-- **Dashboard**: Halaman web untuk admin dan user.
+- **Manajemen Data Siswa**: CRUD siswa dengan NIS, nama, gender, tanggal lahir, dan alamat.
+- **Manajemen Mata Pelajaran**: CRUD mata pelajaran.
+- **Manajemen Guru**: CRUD guru dengan assignment mata pelajaran.
+- **Input Nilai**: Input nilai tugas, UTS, dan UAS siswa per semester.
+- **Perhitungan Otomatis**: Nilai akhir dihitung otomatis = (tugas × 0.3) + (UTS × 0.3) + (UAS × 0.4).
+- **Predikat Nilai**: Konversi nilai ke predikat (A, B, C, D, E).
+- **Raport Lengkap**: Tampilkan raport siswa untuk semua 6 semester.
+- **Ranking Siswa**: Ranking per kelas berdasarkan rata-rata nilai.
+- **Ekspor PDF**: Export raport ke format PDF (dalam pengembangan).
 
 ## Teknologi
 
 - **Framework**: Laravel 11
-- **Database**: MySQL (dengan migrations)
-- **Autentikasi**: Laravel Sanctum, Fortify
-- **Notifikasi**: Firebase
-- **Frontend**: Blade templates, Vite untuk asset bundling
+- **Database**: SQLite (development) / MySQL (production)
+- **Frontend**: Blade templates, Bootstrap 5
+- **ORM**: Eloquent
+
+## Struktur Database
+
+### Tabel Utama:
+- `students` - Data siswa
+- `subjects` - Mata pelajaran
+- `teachers` - Data guru
+- `classes` - Kelas siswa
+- `school_years` - Tahun ajaran
+- `semesters` - Semester (1-6)
+- `grades` - Nilai siswa dengan relasi lengkap
 
 ## Instalasi
 
@@ -39,61 +52,73 @@ Aplikasi web berbasis Laravel untuk mengelola absensi siswa, user management, da
    php artisan key:generate
    ```
 
-4. Konfigurasi database di `.env`:
+4. Konfigurasi database di `.env` (SQLite untuk development):
    ```
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=nilai_rapor_siswa
-   DB_USERNAME=your_username
-   DB_PASSWORD=your_password
+   DB_CONNECTION=sqlite
+   DB_DATABASE="c:/path/to/database/database.sqlite"
    ```
 
 5. Jalankan migrations dan seeders:
    ```bash
-   php artisan migrate
+   php artisan migrate:fresh
    php artisan db:seed
    ```
 
-6. Build assets:
-   ```bash
-   npm run build
-   ```
-
-7. Jalankan server:
+6. Jalankan server:
    ```bash
    php artisan serve
    ```
 
-## Penggunaan
+Akses aplikasi di `http://127.0.0.1:8000`
 
-- Akses web app di `http://localhost:8000`
-- Login sebagai admin atau user
-- Gunakan API endpoints untuk integrasi mobile
+## Routes
 
-## API Endpoints
+### Web Routes (dengan authentication):
+- `GET /` - Dashboard
+- `GET /home` - Dashboard
+- `GET /students` - Daftar siswa
+- `POST /students` - Buat siswa baru
+- `PUT /students/{id}` - Update siswa
+- `DELETE /students/{id}` - Hapus siswa
+- `GET /subjects` - Daftar mata pelajaran
+- `POST /subjects` - Buat mata pelajaran baru
+- `GET /teachers` - Daftar guru
+- `POST /teachers` - Buat guru baru
 
-- `POST /api/login` - Login
-- `POST /api/checkin` - Check-in absensi
-- `POST /api/checkout` - Check-out absensi
-- `GET /api/api-attendances` - Lihat absensi
-- Lihat `routes/api.php` untuk lengkapnya
+## Model & Relasi
 
-## Testing
+```
+Student
+├── hasMany(Grade)
 
-Jalankan test dengan:
-```bash
-php artisan test
+Subject
+├── hasMany(Teacher)
+├── hasMany(Grade)
+
+Teacher
+├── belongsTo(Subject)
+├── hasMany(Grade)
+
+Grade
+├── belongsTo(Student)
+├── belongsTo(Subject)
+├── belongsTo(Teacher)
+├── belongsTo(SchoolClass)
+├── belongsTo(SchoolYear)
+├── belongsTo(Semester)
+├── calculateNilaiAkhir() [otomatis saat save]
 ```
 
-## Kontribusi
+## Fitur Pengembangan Selanjutnya
 
-1. Fork repository
-2. Buat branch fitur baru
-3. Commit perubahan
-4. Push ke branch
-5. Buat Pull Request
+- Input nilai siswa per mata pelajaran
+- Tampilan raport lengkap 6 semester
+- Ranking siswa per kelas
+- Ekspor raport ke PDF
+- Import data siswa dari Excel
+- Dashboard admin dengan statistik
 
 ## Lisensi
 
 MIT License
+
