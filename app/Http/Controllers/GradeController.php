@@ -88,32 +88,83 @@ class GradeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'subject_id' => [
-                'required',
-                'exists:subjects,id',
-                Rule::unique('grades', 'subject_id')->where(function ($query) use ($request) {
-                    return $query
-                        ->where('student_id', $request->student_id)
-                        ->where('class_id', $request->class_id)
-                        ->where('school_year_id', $request->school_year_id)
-                        ->where('semester_id', $request->semester_id);
-                }),
-            ],
-            'teacher_id' => 'required|exists:teachers,id',
-            'class_id' => 'required|exists:classes,id',
-            'school_year_id' => 'required|exists:school_years,id',
-            'semester_id' => 'required|exists:semesters,id',
+            'student_name' => 'required|string|max:255',
+            'subject_name' => 'required|string|max:255',
+            'teacher_name' => 'required|string|max:255',
+            'class_name' => 'required|string|max:255',
+            'school_year' => 'required|string|max:255',
+            'semester_name' => 'required|string|max:255',
             'nilai_tugas' => 'required|numeric|min:0|max:100',
             'nilai_uts' => 'required|numeric|min:0|max:100',
             'nilai_uas' => 'required|numeric|min:0|max:100',
-        ], [
-            'subject_id.unique' => 'Mapel ini sudah diinput untuk siswa pada kelas, tahun ajaran, dan semester yang sama.',
         ]);
 
-        Grade::create($request->all());
+        $studentName = preg_replace('/\s+/', ' ', trim($request->student_name));
+        $subjectName = preg_replace('/\s+/', ' ', trim($request->subject_name));
+        $teacherName = preg_replace('/\s+/', ' ', trim($request->teacher_name));
+        $className = preg_replace('/\s+/', ' ', trim($request->class_name));
+        $yearName = preg_replace('/\s+/', ' ', trim($request->school_year));
+        $semesterName = preg_replace('/\s+/', ' ', trim($request->semester_name));
+
+        $student = Student::firstOrCreate(
+            ['name' => $studentName],
+            [
+                'nis' => $this->generateUniqueNis(),
+                'gender' => 'L',
+                'birth_date' => '2000-01-01',
+                'address' => '-',
+            ]
+        );
+
+        $subject = Subject::firstOrCreate(['name' => $subjectName]);
+
+        $teacher = Teacher::firstOrCreate(
+            ['name' => $teacherName],
+            [
+                'nip' => $this->generateUniqueNip(),
+                'subject_id' => $subject->id,
+            ]
+        );
+
+        $schoolClass = SchoolClass::firstOrCreate(['name' => $className]);
+        $year = SchoolYear::firstOrCreate(['year' => $yearName]);
+        $semester = Semester::firstOrCreate(['name' => $semesterName]);
+
+        $duplicate = Grade::where('student_id', $student->id)
+            ->where('subject_id', $subject->id)
+            ->where('class_id', $schoolClass->id)
+            ->where('school_year_id', $year->id)
+            ->where('semester_id', $semester->id)
+            ->exists();
+
+        if ($duplicate) {
+            return back()->withInput()->withErrors(['subject_name' => 'Mapel ini sudah diinput untuk siswa pada kelas, tahun ajaran, dan semester yang sama.']);
+        }
+
+        Grade::create([
+            'student_id' => $student->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+            'class_id' => $schoolClass->id,
+            'school_year_id' => $year->id,
+            'semester_id' => $semester->id,
+            'nilai_tugas' => $request->nilai_tugas,
+            'nilai_uts' => $request->nilai_uts,
+            'nilai_uas' => $request->nilai_uas,
+            'nilai_akhir' => round((($request->nilai_tugas * 30) + ($request->nilai_uts * 30) + ($request->nilai_uas * 40)) / 100, 2),
+        ]);
 
         return redirect()->route('grades.index')->with('success', 'Nilai rapor berhasil disimpan.');
+    }
+
+    private function generateUniqueNis(): string
+    {
+        return 'NIS' . uniqid();
+    }
+
+    private function generateUniqueNip(): string
+    {
+        return 'NIP' . uniqid();
     }
 
     public function edit(Grade $grade)

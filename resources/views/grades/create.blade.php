@@ -17,75 +17,39 @@
             
             <div class="row g-3">
                 <div class="col-12 col-md-6">
-                    <label class="form-label">Siswa <span class="text-danger">*</span></label>
-                    <select name="student_id" class="form-select" required>
-                        <option value="">-- Pilih Siswa --</option>
-                        @foreach($students as $student)
-                            <option value="{{ $student->id }}" {{ old('student_id') == $student->id ? 'selected' : '' }}>
-                                {{ $student->name }} ({{ $student->nis }})
-                            </option>
-                        @endforeach
-                    </select>
+                    <label class="form-label">Nama Siswa <span class="text-danger">*</span></label>
+                    <input type="text" name="student_name" class="form-control" placeholder="Masukkan nama siswa" value="{{ old('student_name') }}" required>
+                    <small class="text-secondary">Ketik nama siswa secara manual, contoh: Ahmad Fauzi</small>
                 </div>
                 
                 <div class="col-12 col-md-6">
-                    <label class="form-label">Mapel <span class="text-danger">*</span></label>
-                    <select name="subject_id" class="form-select" required>
-                        <option value="">-- Pilih Mapel --</option>
-                        @foreach($subjects as $subject)
-                            <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                {{ $subject->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <label class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
+                    <input type="text" name="subject_name" class="form-control" placeholder="Masukkan nama mapel" value="{{ old('subject_name') }}" required>
+                    <small class="text-secondary">Ketik nama mata pelajaran secara manual, contoh: Matematika</small>
                 </div>
                 
                 <div class="col-12 col-md-6">
-                    <label class="form-label">Guru Pengajar <span class="text-danger">*</span></label>
-                    <select name="teacher_id" class="form-select" required>
-                        <option value="">-- Pilih Guru --</option>
-                        @foreach($teachers as $teacher)
-                            <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
-                                {{ $teacher->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <label class="form-label">Nama Guru <span class="text-danger">*</span></label>
+                    <input type="text" name="teacher_name" class="form-control" placeholder="Masukkan nama guru" value="{{ old('teacher_name') }}" required>
+                    <small class="text-secondary">Ketik nama guru secara manual, contoh: Budi Santoso</small>
                 </div>
                 
                 <div class="col-12 col-md-6">
                     <label class="form-label">Kelas <span class="text-danger">*</span></label>
-                    <select name="class_id" class="form-select" required>
-                        <option value="">-- Pilih Kelas --</option>
-                        @foreach($classes as $class)
-                            <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
-                                {{ $class->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="class_name" class="form-control" placeholder="Masukkan nama kelas" value="{{ old('class_name') }}" required>
+                    <small class="text-secondary">Ketik nama kelas secara manual, contoh: X IPA 1</small>
                 </div>
                 
                 <div class="col-12 col-md-6">
                     <label class="form-label">Tahun Ajaran <span class="text-danger">*</span></label>
-                    <select name="school_year_id" class="form-select" required>
-                        <option value="">-- Pilih Tahun Ajaran --</option>
-                        @foreach($years as $year)
-                            <option value="{{ $year->id }}" {{ old('school_year_id') == $year->id ? 'selected' : '' }}>
-                                {{ $year->year }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="school_year" class="form-control" placeholder="Masukkan tahun ajaran" value="{{ old('school_year') }}" required>
+                    <small class="text-secondary">Ketik tahun ajaran manual, contoh: 2025/2026</small>
                 </div>
                 
                 <div class="col-12 col-md-6">
                     <label class="form-label">Semester <span class="text-danger">*</span></label>
-                    <select name="semester_id" class="form-select" required>
-                        <option value="">-- Pilih Semester --</option>
-                        @foreach($semesters as $semester)
-                            <option value="{{ $semester->id }}" {{ old('semester_id') == $semester->id ? 'selected' : '' }}>
-                                {{ $semester->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="semester_name" class="form-control" placeholder="Masukkan semester" value="{{ old('semester_name') }}" required>
+                    <small class="text-secondary">Ketik semester manual, contoh: Semester 1</small>
                 </div>
                 
                 <div class="col-12">
