@@ -1,37 +1,28 @@
-<?php
+﻿<?php
 
-use App\Models\Student;
-use App\Models\Subject;
-use App\Models\Teacher;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Schema;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\GradeController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $stats = [
-        'students' => Schema::hasTable('students') ? Student::count() : 0,
-        'subjects' => Schema::hasTable('subjects') ? Subject::count() : 0,
-        'teachers' => Schema::hasTable('teachers') ? Teacher::count() : 0,
-    ];
-
-    return view('dashboard', compact('stats'));
+    return redirect()->route('grades.index');
 });
 
 Route::get('home', function () {
-    $stats = [
-        'students' => Schema::hasTable('students') ? Student::count() : 0,
-        'subjects' => Schema::hasTable('subjects') ? Subject::count() : 0,
-        'teachers' => Schema::hasTable('teachers') ? Teacher::count() : 0,
-    ];
-
-    return view('dashboard', compact('stats'));
+    return redirect()->route('grades.index');
 })->name('home');
 
-Route::resource('students', StudentController::class);
-Route::resource('subjects', SubjectController::class);
-Route::resource('teachers', TeacherController::class);
-Route::resource('grades', GradeController::class);
-Route::get('students/{student}/transcript', [GradeController::class, 'transcript'])->name('students.transcript');
+Route::resource('grades', GradeController::class)->except(['show']);
+Route::get('rapor/{student}/transcript', [GradeController::class, 'transcript'])->name('students.transcript');
+Route::get('rapor/{student}/transcript/pdf', [GradeController::class, 'transcriptPdf'])->name('students.transcript.pdf');
+
+Route::any('students/{any?}', function () {
+    return redirect()->route('grades.index');
+})->where('any', '.*');
+
+Route::any('subjects/{any?}', function () {
+    return redirect()->route('grades.index');
+})->where('any', '.*');
+
+Route::any('teachers/{any?}', function () {
+    return redirect()->route('grades.index');
+})->where('any', '.*');

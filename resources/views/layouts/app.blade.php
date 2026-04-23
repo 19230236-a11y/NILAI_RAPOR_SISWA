@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -142,9 +142,7 @@
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav ms-lg-4 me-auto mb-2 mb-lg-0 nav nav-pills gap-1">
                     <li class="nav-item"><a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('students.*') ? 'active' : '' }}" href="{{ route('students.index') }}">Siswa</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('subjects.*') ? 'active' : '' }}" href="{{ route('subjects.index') }}">Mapel</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('teachers.*') ? 'active' : '' }}" href="{{ route('teachers.index') }}">Guru</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('grades.*') ? 'active' : '' }}" href="{{ route('grades.index') }}">Nilai Rapor</a></li>
                 </ul>
             </div>
         </div>
@@ -155,11 +153,11 @@
             <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
                 <div>
                     <h1 class="h4 mb-1">Panel Akademik Sekolah</h1>
-                    <p class="mb-0 opacity-75">Kelola data siswa, guru, dan mata pelajaran dalam satu alur kerja.</p>
+                    <p class="mb-0 opacity-75">Fokus pada pengarsipan nilai rapor siswa lintas semester dan kelas.</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('students.create') }}" class="btn btn-light btn-sm">Tambah Siswa</a>
-                    <a href="{{ route('teachers.create') }}" class="btn btn-light btn-sm">Tambah Guru</a>
+                    <a href="{{ route('grades.index') }}" class="btn btn-light btn-sm">Arsip Nilai</a>
+                    <a href="{{ route('grades.create') }}" class="btn btn-light btn-sm">Input Nilai</a>
                 </div>
             </div>
         </section>
@@ -207,3 +205,4 @@
     @stack('scripts')
 </body>
 </html>
+

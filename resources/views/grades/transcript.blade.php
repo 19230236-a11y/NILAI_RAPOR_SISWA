@@ -1,25 +1,77 @@
 @extends('layouts.app')
 
+@push('style')
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+
+        .glass-panel,
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #d7e2f7 !important;
+        }
+
+        body {
+            background: #fff !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
     <div>
         <h2 class="mb-1">Rapor Arsip - {{ $student->name }}</h2>
-        <p class="text-secondary mb-0">Riwayat nilai rapor dari tahun ajaran ke tahun ajaran (Kelas 10 - 12)</p>
+        <p class="text-secondary mb-0">Riwayat nilai rapor dari kelas 10 sampai 12 yang siap dicetak.</p>
     </div>
-    <a href="{{ route('students.show', $student) }}" class="btn btn-outline-secondary">Kembali</a>
+    <div class="d-flex gap-2 no-print">
+        <a href="{{ route('students.transcript.pdf', $student) }}" class="btn btn-brand">Export PDF</a>
+        <a href="{{ route('grades.index') }}" class="btn btn-outline-secondary">Kembali</a>
+    </div>
 </div>
 
-<div class="alert alert-info">
-    <strong>NIS:</strong> {{ $student->nis }} | <strong>Nama:</strong> {{ $student->name }}
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <p class="text-secondary mb-1">NIS</p>
+                <p class="fw-semibold mb-0">{{ $student->nis }}</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="text-secondary mb-1">Nama</p>
+                <p class="fw-semibold mb-0">{{ $student->name }}</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="text-secondary mb-1">Tanggal Cetak</p>
+                <p class="fw-semibold mb-0">{{ now()->format('d-m-Y H:i') }}</p>
+            </div>
+        </div>
+    </div>
 </div>
 
-@if($groupedGrades->isEmpty())
+@if($gradesByClass->isEmpty())
     <div class="alert alert-warning">
         Belum ada data nilai rapor untuk siswa ini.
     </div>
 @else
-    @foreach($groupedGrades as $period => $periodGrades)
-        <div class="card border-0 shadow-sm mb-4">
+    @foreach($gradesByClass as $classLabel => $classData)
+        <div class="card border-0 shadow-sm mb-3 page-break-inside-avoid">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <h4 class="mb-0">{{ $classLabel }}</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge text-bg-primary">Rata-rata: {{ number_format($classData['summary']['avg'] ?? 0, 2) }}</span>
+                        <span class="badge text-bg-success">Tertinggi: {{ number_format($classData['summary']['max'] ?? 0, 2) }}</span>
+                        <span class="badge text-bg-danger">Terendah: {{ number_format($classData['summary']['min'] ?? 0, 2) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @foreach($classData['periods'] as $period => $periodGrades)
+        <div class="card border-0 shadow-sm mb-4 page-break-inside-avoid">
             <div class="card-header bg-light">
                 <h5 class="mb-0">{{ $period }}</h5>
             </div>
@@ -83,9 +135,10 @@
                 </table>
             </div>
         </div>
+        @endforeach
     @endforeach
     
-    @if($groupedGrades->count() > 0)
+    @if($gradesByClass->count() > 0)
         <div class="card border-0 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">Statistik Keseluruhan</h5>

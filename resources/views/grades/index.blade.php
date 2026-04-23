@@ -97,6 +97,8 @@
                     </td>
                     <td class="text-center">
                         <div class="d-flex flex-wrap justify-content-center gap-2">
+                            <a href="{{ route('students.transcript', $grade->student) }}" class="btn btn-sm btn-outline-primary">Transcript</a>
+                            <a href="{{ route('students.transcript.pdf', $grade->student) }}" class="btn btn-sm btn-outline-success">PDF</a>
                             <a href="{{ route('grades.edit', $grade) }}" class="btn btn-sm btn-outline-warning">Edit</a>
                             <form action="{{ route('grades.destroy', $grade) }}" method="POST">
                                 @csrf
