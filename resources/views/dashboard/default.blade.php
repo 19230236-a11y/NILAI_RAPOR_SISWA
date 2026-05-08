@@ -6,7 +6,7 @@
 <div class="row g-4 mb-4">
     <div class="col-12">
         <h2 class="h4">Selamat Datang, {{ Auth::user()->name }}!</h2>
-        <p class="text-muted">Berikut adalah ringkasan sistem pengarsipan nilai rapor siswa.</p>
+        <p class="text-muted">Berikut adalah ringkasan sistem pengarsipan nilai rapor siswa per jurusan.</p>
     </div>
 </div>
 
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <p class="text-muted mb-0 small">Data Nilai</p>
+                        <p class="text-muted mb-0 small">Rekap Nilai Per Jurusan</p>
                         <h3 class="mb-0">{{ $stats['total_nilai'] }}</h3>
                     </div>
                 </div>

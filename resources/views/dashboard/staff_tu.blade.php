@@ -6,7 +6,7 @@
 <div class="row g-4 mb-4">
     <div class="col-12">
         <h2 class="h4">Selamat Datang, {{ Auth::user()->name }}!</h2>
-        <p class="text-muted">Panel Staff Tata Usaha - Kelola data siswa, kelas, dan laporan nilai.</p>
+        <p class="text-muted">Panel Staff Tata Usaha - Kelola data siswa, kelas, dan nilai per jurusan.</p>
     </div>
 </div>
 

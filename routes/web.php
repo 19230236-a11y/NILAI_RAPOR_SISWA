@@ -71,14 +71,9 @@ Route::middleware(['auth', 'role:staff_tu'])->group(function () {
     Route::resource('students', StudentController::class);
     Route::resource('classes', SchoolClassController::class);
     Route::resource('school-years', SchoolYearController::class);
-    Route::resource('grades', GradeController::class)->except(['show']);
     
     // Program management
     Route::resource('programs', \App\Http\Controllers\ProgramController::class)->except(['edit', 'update']);
-    
-    // Bulk input nilai - Dashboard
-    Route::get('grades-bulk/create', [GradeController::class, 'bulkCreate'])->name('grades.bulk-create');
-    Route::post('grades-bulk/store', [GradeController::class, 'bulkStore'])->name('grades.bulk-store');
     
     // Per-student grade input
     Route::get('students/{student}/grades/bulk-create', [GradeController::class, 'bulkCreateByStudent'])->name('students.grades.bulk-create');
@@ -93,7 +88,6 @@ Route::middleware(['auth', 'role:staff_tu'])->group(function () {
 
 // ==================== REPORT ROUTES (Admin, Kepala Sekolah, dan Staff TU) ====================
 Route::middleware(['auth', 'role:admin|kepala_sekolah|staff_tu'])->group(function () {
-    Route::get('reports/grades', [GradeController::class, 'index'])->name('reports.grades');
     Route::get('reports/transcript/{student}', [GradeController::class, 'transcript'])->name('reports.transcript');
     Route::get('reports/transcript/{student}/pdf', [GradeController::class, 'transcriptPdf'])->name('reports.transcript.pdf');
 });

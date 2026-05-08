@@ -8,9 +8,16 @@
         <h2 class="h4 mb-1">Data Siswa</h2>
         <p class="text-muted mb-0">Kelola data siswa sekolah</p>
     </div>
-    <a href="{{ route('students.create') }}" class="btn btn-brand">
-        <i class="bi bi-plus-lg me-2"></i>Tambah Siswa
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('students.create', ['program' => $programId]) }}" class="btn btn-brand">
+            <i class="bi bi-plus-lg me-2"></i>Tambah Siswa
+        </a>
+        @if($programId)
+        <a href="{{ route('programs.grades.create', $programId) }}" class="btn btn-outline-primary">
+            <i class="bi bi-plus-square me-2"></i>Tambah Nilai
+        </a>
+        @endif
+    </div>
 </div>
 
 <div class="card border-0 shadow-sm">

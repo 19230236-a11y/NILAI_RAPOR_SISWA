@@ -6,7 +6,7 @@
 <div class="row g-4 mb-4">
     <div class="col-12">
         <h2 class="h4">Selamat Datang, {{ Auth::user()->name }}!</h2>
-        <p class="text-muted">Panel Guru - Kelola nilai rapor siswa.</p>
+        <p class="text-muted">Panel Guru - Kelola nilai rapor siswa per jurusan.</p>
     </div>
 </div>
 
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <p class="text-muted mb-0 small">Data Nilai</p>
+                        <p class="text-muted mb-0 small">Rekap Nilai Per Jurusan</p>
                         <h3 class="mb-0">{{ $stats['total_nilai'] }}</h3>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Nilai Terbaru</h5>
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Rekap Nilai Per Jurusan</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -115,7 +115,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted py-4">Belum ada data nilai</td>
+                                <td colspan="4" class="text-center text-muted py-4">Belum ada rekap nilai per jurusan</td>
                             </tr>
                             @endforelse
                         </tbody>

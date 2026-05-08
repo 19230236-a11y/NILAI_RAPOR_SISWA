@@ -533,31 +533,11 @@
                     </a>
                     @endforeach
 
-                    <!-- Input Nilai Section -->
-                    <div style="border-top: 1px solid rgba(255,255,255,0.2); margin: 1rem 0; padding: 0.5rem 1rem; font-size: 0.75rem; text-transform: uppercase; color: rgba(255,255,255,0.6);">Input Nilai</div>
-
-                    <a href="{{ route('grades.bulk-create') }}" class="menu-item {{ request()->routeIs('grades.bulk-create') ? 'active' : '' }}">
-                        <i class="bi bi-stack"></i>
-                        <span>Bulk Input Nilai</span>
-                    </a>
-
-                    <a href="{{ route('grades.create') }}" class="menu-item {{ request()->routeIs('grades.create') ? 'active' : '' }}">
-                        <i class="bi bi-pencil-square"></i>
-                        <span>Input Per Pelajaran</span>
-                    </a>
-
-                    <a href="{{ route('grades.index') }}" class="menu-item {{ request()->routeIs('grades.*') ? 'active' : '' }}">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span>Laporan Nilai</span>
-                    </a>
+                    <!-- NOTE: Removed global Input Nilai menu items; input/laporan nilai available per-program -->
                 @elseif(Auth::user()->role === 'kepala_sekolah')
                     <a href="{{ route('users.index') }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <i class="bi bi-people-fill"></i>
                         <span>Kelola Akun</span>
-                    </a>
-                    <a href="{{ route('reports.grades') }}" class="menu-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span>Laporan Nilai</span>
                     </a>
                 @endif
 
@@ -600,7 +580,7 @@
         <section class="hero-strip">
             <div>
                 <h1 class="h4 mb-2">BUKU INDUK REGISTER PESERTA DIDIK</h1>
-                <p class="mb-0 opacity-75">Fokus pada pengarsipan nilai rapor siswa lintas semester dan kelas.</p>
+                <p class="mb-0 opacity-75">Fokus pada pengarsipan nilai rapor siswa per jurusan, semester, dan kelas.</p>
             </div>
         </section>
 

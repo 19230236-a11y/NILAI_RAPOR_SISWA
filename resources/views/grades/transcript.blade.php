@@ -28,7 +28,7 @@
     </div>
     <div class="d-flex gap-2 no-print">
         <a href="{{ route('students.transcript.pdf', $student) }}" class="btn btn-brand">Export PDF</a>
-        <a href="{{ route('grades.index') }}" class="btn btn-outline-secondary">Kembali</a>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">Kembali</a>
     </div>
 </div>
 
@@ -53,7 +53,7 @@
 
 @if($gradesByClass->isEmpty())
     <div class="alert alert-warning">
-        Belum ada data nilai rapor untuk siswa ini.
+        Belum ada rekap nilai per jurusan untuk siswa ini.
     </div>
 @else
     @foreach($gradesByClass as $classLabel => $classData)
@@ -141,7 +141,7 @@
     @if($gradesByClass->count() > 0)
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Statistik Keseluruhan</h5>
+                <h5 class="card-title">Statistik Per Jurusan</h5>
                 
                 @php
                     $allNilai = $grades->pluck('nilai_akhir');
@@ -153,28 +153,28 @@
                 <div class="row g-3">
                     <div class="col-md-3">
                         <div class="p-3 bg-light rounded text-center">
-                            <div class="text-secondary small">Rata-rata Keseluruhan</div>
+                            <div class="text-secondary small">Rata-rata Per Jurusan</div>
                             <div class="h4 fw-bold">{{ number_format($rataRata, 2) }}</div>
                         </div>
                     </div>
                     
                     <div class="col-md-3">
                         <div class="p-3 bg-light rounded text-center">
-                            <div class="text-secondary small">Nilai Tertinggi</div>
+                            <div class="text-secondary small">Nilai Tertinggi Per Jurusan</div>
                             <div class="h4 fw-bold text-success">{{ number_format($tertinggi, 2) }}</div>
                         </div>
                     </div>
                     
                     <div class="col-md-3">
                         <div class="p-3 bg-light rounded text-center">
-                            <div class="text-secondary small">Nilai Terendah</div>
+                            <div class="text-secondary small">Nilai Terendah Per Jurusan</div>
                             <div class="h4 fw-bold text-danger">{{ number_format($terendah, 2) }}</div>
                         </div>
                     </div>
                     
                     <div class="col-md-3">
                         <div class="p-3 bg-light rounded text-center">
-                            <div class="text-secondary small">Total Mapel</div>
+                            <div class="text-secondary small">Total Mapel Per Jurusan</div>
                             <div class="h4 fw-bold text-info">{{ $grades->count() }}</div>
                         </div>
                     </div>

@@ -56,9 +56,18 @@ class StudentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('students.create');
+        $programId = $request->get('program', null);
+        $program = $programId ? Program::find($programId) : null;
+
+        $classes = SchoolClass::orderBy('name')->get();
+        $years = SchoolYear::orderBy('year')->get();
+        $semesters = Semester::orderBy('name')->get();
+        $subjects = Subject::orderBy('name')->get();
+        $teachers = Teacher::orderBy('name')->get();
+
+        return view('students.create', compact('program', 'programId', 'classes', 'years', 'semesters', 'subjects', 'teachers'));
     }
 
     /**
@@ -77,12 +86,43 @@ class StudentController extends Controller
             'phone' => 'nullable|string|max:20',
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',
+            'program_id' => 'nullable|exists:programs,id',
+            'grades' => 'nullable|array',
+            'grades.*.subject_id' => 'nullable|exists:subjects,id',
+            'grades.*.teacher_id' => 'nullable|exists:teachers,id',
+            'grades.*.class_id' => 'nullable|exists:classes,id',
+            'grades.*.school_year_id' => 'nullable|exists:school_years,id',
+            'grades.*.semester_id' => 'nullable|exists:semesters,id',
+            'grades.*.nilai_tugas' => 'nullable|numeric|min:0|max:100',
+            'grades.*.nilai_uts' => 'nullable|numeric|min:0|max:100',
+            'grades.*.nilai_uas' => 'nullable|numeric|min:0|max:100',
         ]);
+        $student = Student::create($validated);
 
-        Student::create($validated);
+        // Handle optional grades input (array of grades) - only create when subject present
+        $gradesInput = $validated['grades'] ?? [];
+        foreach ($gradesInput as $g) {
+            if (empty($g['subject_id'])) continue;
 
-        return redirect()->route('students.index')
-            ->with('success', 'Data siswa berhasil ditambahkan.');
+            // skip if no scores provided
+            $hasScore = isset($g['nilai_tugas']) || isset($g['nilai_uts']) || isset($g['nilai_uas']);
+            if (!$hasScore) continue;
+
+            \App\Models\Grade::create([
+                'student_id' => $student->id,
+                'subject_id' => $g['subject_id'],
+                'teacher_id' => $g['teacher_id'] ?? null,
+                'class_id' => $g['class_id'] ?? null,
+                'school_year_id' => $g['school_year_id'] ?? null,
+                'semester_id' => $g['semester_id'] ?? null,
+                'nilai_tugas' => $g['nilai_tugas'] ?? 0,
+                'nilai_uts' => $g['nilai_uts'] ?? 0,
+                'nilai_uas' => $g['nilai_uas'] ?? 0,
+            ]);
+        }
+
+        return redirect()->route('students.index', ['program' => $validated['program_id'] ?? null])
+            ->with('success', 'Data siswa dan nilai (jika ada) berhasil ditambahkan.');
     }
 
     /**
