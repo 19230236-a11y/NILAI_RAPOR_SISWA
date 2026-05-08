@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,7 @@ class PermissionFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => 10,
+            'user_id' => User::inRandomOrder()->value('id') ?? User::factory()->create()->id,
             'date_permission' => $this->faker->date(),
             'reason' => $this->faker->text(),
             'image' => $this->faker->imageUrl(),

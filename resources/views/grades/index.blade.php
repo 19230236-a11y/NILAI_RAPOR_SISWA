@@ -6,7 +6,14 @@
         <h2 class="mb-1">Manajemen Nilai Rapor</h2>
         <p class="text-secondary mb-0">Input dan arsip nilai rapor siswa per mapel per semester.</p>
     </div>
-    <a href="{{ route('grades.create') }}" class="btn btn-brand">+ Input Nilai</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('grades.bulk-create') }}" class="btn btn-success">
+            <i class="bi bi-stack me-2"></i>Bulk Input Nilai
+        </a>
+        <a href="{{ route('grades.create') }}" class="btn btn-brand">
+            <i class="bi bi-plus-lg me-2"></i>Input Nilai
+        </a>
+    </div>
 </div>
 
 <div class="row g-3 mb-3">

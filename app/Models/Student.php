@@ -12,10 +12,16 @@ class Student extends Model
         'gender',
         'birth_date',
         'address',
+        'program_id',
     ];
 
     public function grades()
     {
         return $this->hasMany(Grade::class);
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
     }
 }

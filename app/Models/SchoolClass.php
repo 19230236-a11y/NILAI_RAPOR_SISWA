@@ -10,10 +10,16 @@ class SchoolClass extends Model
 
     protected $fillable = [
         'name',
+        'program_id',
     ];
 
     public function grades()
     {
         return $this->hasMany(Grade::class);
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
     }
 }

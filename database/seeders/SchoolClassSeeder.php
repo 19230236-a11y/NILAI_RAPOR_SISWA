@@ -22,7 +22,7 @@ class SchoolClassSeeder extends Seeder
         ];
         
         foreach ($classes as $class) {
-            SchoolClass::create(['name' => $class]);
+            SchoolClass::firstOrCreate(['name' => $class]);
         }
     }
 }

@@ -18,7 +18,7 @@ class SemesterSeeder extends Seeder
         ];
         
         foreach ($semesters as $semester) {
-            Semester::create(['name' => $semester]);
+            Semester::firstOrCreate(['name' => $semester]);
         }
     }
 }

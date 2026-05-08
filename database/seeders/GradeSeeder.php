@@ -56,17 +56,21 @@ class GradeSeeder extends Seeder
                         $nilaiUts = min(98, $base + 2 + ($subjectIndex % 5));
                         $nilaiUas = min(99, $base + 3 + ($subjectIndex % 3));
 
-                        Grade::create([
-                            'student_id' => $student->id,
-                            'subject_id' => $subject->id,
-                            'teacher_id' => optional($teachers->get($subject->id))->id ?? Teacher::inRandomOrder()->value('id'),
-                            'class_id' => $class->id,
-                            'school_year_id' => $year->id,
-                            'semester_id' => $semester->id,
-                            'nilai_tugas' => $nilaiTugas,
-                            'nilai_uts' => $nilaiUts,
-                            'nilai_uas' => $nilaiUas,
-                        ]);
+                        Grade::updateOrCreate(
+                            [
+                                'student_id' => $student->id,
+                                'subject_id' => $subject->id,
+                                'class_id' => $class->id,
+                                'school_year_id' => $year->id,
+                                'semester_id' => $semester->id,
+                            ],
+                            [
+                                'teacher_id' => optional($teachers->get($subject->id))->id ?? Teacher::inRandomOrder()->value('id'),
+                                'nilai_tugas' => $nilaiTugas,
+                                'nilai_uts' => $nilaiUts,
+                                'nilai_uas' => $nilaiUas,
+                            ]
+                        );
                     }
                 }
             }

@@ -25,7 +25,10 @@ class StudentSeeder extends Seeder
         ];
         
         foreach ($students as $student) {
-            Student::create($student);
+            Student::updateOrCreate(
+                ['nis' => $student['nis']],
+                $student
+            );
         }
     }
 }

@@ -13,11 +13,17 @@ class SubjectSeeder extends Seeder
      */
     public function run(): void
     {
-        Subject::create(['name' => 'Matematika']);
-        Subject::create(['name' => 'Bahasa Indonesia']);
-        Subject::create(['name' => 'Bahasa Inggris']);
-        Subject::create(['name' => 'Fisika']);
-        Subject::create(['name' => 'Kimia']);
-        Subject::create(['name' => 'Biologi']);
+        $subjects = [
+            'Matematika',
+            'Bahasa Indonesia',
+            'Bahasa Inggris',
+            'Fisika',
+            'Kimia',
+            'Biologi',
+        ];
+
+        foreach ($subjects as $name) {
+            Subject::firstOrCreate(['name' => $name]);
+        }
     }
 }
