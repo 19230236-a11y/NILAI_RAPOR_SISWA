@@ -78,9 +78,9 @@ class GradeController extends Controller
                     'periods' => $periods,
                     'summary' => [
                         'count' => $items->count(),
-                        'avg' => $items->avg('nilai_akhir'),
-                        'max' => $items->max('nilai_akhir'),
-                        'min' => $items->min('nilai_akhir'),
+                        'avg' => $items->avg('nilai'),
+                        'max' => $items->max('nilai'),
+                        'min' => $items->min('nilai'),
                     ],
                 ];
             });
@@ -97,9 +97,14 @@ class GradeController extends Controller
      */
     public function bulkCreateByStudent(Student $student)
     {
+        $student->load('schoolClass');
+        
         $subjects = Subject::orderBy('name')->get();
         $teachers = Teacher::orderBy('name')->get();
-        $classes = SchoolClass::orderBy('name')->get();
+        // Filter classes by student's program only
+        $classes = SchoolClass::where('program_id', $student->program_id)
+            ->orderBy('name')
+            ->get();
         $years = SchoolYear::orderBy('year')->get();
         $semesters = Semester::orderBy('name')->get();
 
@@ -124,10 +129,19 @@ class GradeController extends Controller
             'semester_id' => 'required|exists:semesters,id',
             'grades' => 'required|array',
             'grades.*.subject_id' => 'required|exists:subjects,id',
-            'grades.*.teacher_id' => 'nullable|exists:teachers,id',
-            'grades.*.nilai_tugas' => 'nullable|numeric|min:0|max:100',
-            'grades.*.nilai_uts' => 'nullable|numeric|min:0|max:100',
-            'grades.*.nilai_uas' => 'nullable|numeric|min:0|max:100',
+            'grades.*.nilai' => 'nullable|numeric|min:0|max:100',
+            'jurusan_subject_1' => 'nullable|string|max:255',
+            'jurusan_subject_2' => 'nullable|string|max:255',
+            'jurusan_subject_3' => 'nullable|string|max:255',
+            'jurusan_subject_4' => 'nullable|string|max:255',
+            'jurusan_subject_5' => 'nullable|string|max:255',
+            'jurusan_subject_6' => 'nullable|string|max:255',
+            'jurusan_nilai_1' => 'nullable|numeric|min:0|max:100',
+            'jurusan_nilai_2' => 'nullable|numeric|min:0|max:100',
+            'jurusan_nilai_3' => 'nullable|numeric|min:0|max:100',
+            'jurusan_nilai_4' => 'nullable|numeric|min:0|max:100',
+            'jurusan_nilai_5' => 'nullable|numeric|min:0|max:100',
+            'jurusan_nilai_6' => 'nullable|numeric|min:0|max:100',
         ]);
 
         $studentId = $student->id;
@@ -137,8 +151,8 @@ class GradeController extends Controller
         $createdCount = 0;
 
         foreach ($validated['grades'] as $gradeData) {
-            // Skip if all values are empty
-            if (!$gradeData['nilai_tugas'] && !$gradeData['nilai_uts'] && !$gradeData['nilai_uas']) {
+            // Skip if nilai is empty
+            if (!isset($gradeData['nilai']) || $gradeData['nilai'] === '') {
                 continue;
             }
 
@@ -154,24 +168,27 @@ class GradeController extends Controller
                 continue;
             }
 
-            // Calculate final grade
-            $tugas = (float)($gradeData['nilai_tugas'] ?? 0);
-            $uts = (float)($gradeData['nilai_uts'] ?? 0);
-            $uas = (float)($gradeData['nilai_uas'] ?? 0);
-            $nilaiAkhir = round((($tugas * 30) + ($uts * 30) + ($uas * 40)) / 100, 2);
-
-            Grade::create([
+            // Build data for creation
+            $createData = [
                 'student_id' => $studentId,
                 'subject_id' => $gradeData['subject_id'],
-                'teacher_id' => $gradeData['teacher_id'] ?? null,
                 'class_id' => $classId,
                 'school_year_id' => $yearId,
                 'semester_id' => $semesterId,
-                'nilai_tugas' => $tugas ?? 0,
-                'nilai_uts' => $uts ?? 0,
-                'nilai_uas' => $uas ?? 0,
-                'nilai_akhir' => $nilaiAkhir,
-            ]);
+                'nilai' => (float)$gradeData['nilai'],
+            ];
+
+            // Add jurusan subjects and values (only for first record per semester)
+            if ($createdCount === 0) {
+                for ($i = 1; $i <= 6; $i++) {
+                    $createData['jurusan_subject_' . $i] = $validated['jurusan_subject_' . $i] ?? null;
+                    $createData['jurusan_nilai_' . $i] = isset($validated['jurusan_nilai_' . $i]) && $validated['jurusan_nilai_' . $i] !== '' 
+                        ? (float)$validated['jurusan_nilai_' . $i] 
+                        : null;
+                }
+            }
+
+            Grade::create($createData);
 
             $createdCount++;
         }
@@ -185,9 +202,14 @@ class GradeController extends Controller
      */
     public function createByStudent(Student $student)
     {
+        $student->load('schoolClass');
+        
         $subjects = Subject::orderBy('name')->get();
         $teachers = Teacher::orderBy('name')->get();
-        $classes = SchoolClass::orderBy('name')->get();
+        // Filter classes by student's program only
+        $classes = SchoolClass::where('program_id', $student->program_id)
+            ->orderBy('name')
+            ->get();
         $years = SchoolYear::orderBy('year')->get();
         $semesters = Semester::orderBy('name')->get();
 
@@ -236,10 +258,7 @@ class GradeController extends Controller
             'semester_id' => 'required|exists:semesters,id',
             'grades' => 'required|array',
             'grades.*.subject_id' => 'required|exists:subjects,id',
-            'grades.*.teacher_id' => 'nullable|exists:teachers,id',
-            'grades.*.nilai_tugas' => 'nullable|numeric|min:0|max:100',
-            'grades.*.nilai_uts' => 'nullable|numeric|min:0|max:100',
-            'grades.*.nilai_uas' => 'nullable|numeric|min:0|max:100',
+            'grades.*.nilai' => 'nullable|numeric|min:0|max:100',
         ]);
 
         $studentId = $validated['student_id'];
@@ -249,8 +268,8 @@ class GradeController extends Controller
         $createdCount = 0;
 
         foreach ($validated['grades'] as $gradeData) {
-            // Skip if all values are empty
-            if (!$gradeData['nilai_tugas'] && !$gradeData['nilai_uts'] && !$gradeData['nilai_uas']) {
+            // Skip if nilai is empty
+            if (!isset($gradeData['nilai']) || $gradeData['nilai'] === '') {
                 continue;
             }
 
@@ -266,23 +285,13 @@ class GradeController extends Controller
                 continue;
             }
 
-            // Calculate final grade
-            $tugas = (float)($gradeData['nilai_tugas'] ?? 0);
-            $uts = (float)($gradeData['nilai_uts'] ?? 0);
-            $uas = (float)($gradeData['nilai_uas'] ?? 0);
-            $nilaiAkhir = round((($tugas * 30) + ($uts * 30) + ($uas * 40)) / 100, 2);
-
             Grade::create([
                 'student_id' => $studentId,
                 'subject_id' => $gradeData['subject_id'],
-                'teacher_id' => $gradeData['teacher_id'] ?? null,
                 'class_id' => $classId,
                 'school_year_id' => $yearId,
                 'semester_id' => $semesterId,
-                'nilai_tugas' => $tugas ?? 0,
-                'nilai_uts' => $uts ?? 0,
-                'nilai_uas' => $uas ?? 0,
-                'nilai_akhir' => $nilaiAkhir,
+                'nilai' => (float)$gradeData['nilai'],
             ]);
 
             $createdCount++;
@@ -313,5 +322,111 @@ class GradeController extends Controller
             'years',
             'semesters'
         ));
+    }
+
+    public function storeByStudent(Request $request, Student $student)
+    {
+        $validated = $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'class_id' => 'required|exists:classes,id',
+            'school_year_id' => 'required|exists:school_years,id',
+            'semester_id' => 'required|exists:semesters,id',
+            'nilai' => 'required|numeric|min:0|max:100',
+        ]);
+
+        // Check for existing grade
+        $existingGrade = Grade::where('student_id', $student->id)
+            ->where('subject_id', $validated['subject_id'])
+            ->where('class_id', $validated['class_id'])
+            ->where('school_year_id', $validated['school_year_id'])
+            ->where('semester_id', $validated['semester_id'])
+            ->first();
+
+        if ($existingGrade) {
+            // Update existing grade
+            $existingGrade->update([
+                'nilai' => $validated['nilai'],
+            ]);
+            $message = 'Nilai rapor berhasil diperbarui!';
+        } else {
+            // Create new grade
+            Grade::create([
+                'student_id' => $student->id,
+                'subject_id' => $validated['subject_id'],
+                'class_id' => $validated['class_id'],
+                'school_year_id' => $validated['school_year_id'],
+                'semester_id' => $validated['semester_id'],
+                'nilai' => $validated['nilai'],
+            ]);
+            $message = 'Nilai rapor berhasil disimpan!';
+        }
+
+        return redirect()->route('students.show', $student)
+            ->with('success', $message);
+    }
+
+    /**
+     * Get semester grades for edit
+     */
+    public function editSemesterGrades(Student $student, $semesterId, $yearId)
+    {
+        $semester = Semester::find($semesterId);
+        $schoolYear = SchoolYear::find($yearId);
+        
+        if (!$semester || !$schoolYear) {
+            return redirect()->route('students.show', $student)
+                ->with('error', 'Semester atau tahun ajaran tidak ditemukan');
+        }
+
+        // Get all grades for this student in this semester and year
+        $grades = Grade::where('student_id', $student->id)
+            ->where('semester_id', $semesterId)
+            ->where('school_year_id', $yearId)
+            ->with(['subject', 'schoolClass', 'schoolYear', 'semester'])
+            ->orderBy('subject_id')
+            ->get();
+
+        return view('grades.edit-semester', compact('student', 'semester', 'schoolYear', 'grades'));
+    }
+
+    /**
+     * Update all grades in a semester
+     */
+    public function updateSemesterGrades(Request $request, Student $student, $semesterId, $yearId)
+    {
+        $validated = $request->validate([
+            'grades' => 'array',
+            'grades.*' => 'numeric|min:0|max:100|nullable',
+        ]);
+
+        $updateCount = 0;
+        if (isset($validated['grades']) && is_array($validated['grades'])) {
+            foreach ($validated['grades'] as $gradeId => $nilai) {
+                if ($nilai !== null && $nilai !== '') {
+                    $grade = Grade::find($gradeId);
+                    if ($grade && $grade->student_id == $student->id) {
+                        $grade->update(['nilai' => $nilai]);
+                        $updateCount++;
+                    }
+                }
+            }
+        }
+
+        return redirect()->route('students.show', $student)
+            ->with('success', "Nilai semester berhasil diperbarui! ($updateCount pelajaran diubah)");
+    }
+
+    /**
+     * Delete all grades in a semester
+     */
+    public function destroySemesterGrades(Student $student, $semesterId, $yearId)
+    {
+        $deletedCount = Grade::where('student_id', $student->id)
+            ->where('semester_id', $semesterId)
+            ->where('school_year_id', $yearId)
+            ->delete();
+
+        return redirect()->route('students.show', $student)
+            ->with('success', "Semua nilai semester berhasil dihapus! ($deletedCount pelajaran dihapus)");
     }
 }

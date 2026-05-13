@@ -13,17 +13,21 @@ class Grade extends Model
         'class_id',
         'school_year_id',
         'semester_id',
-        'nilai_tugas',
-        'nilai_uts',
-        'nilai_uas',
-        'nilai_akhir',
+        'nilai',
+        'jurusan_subject_1', 'jurusan_subject_2', 'jurusan_subject_3',
+        'jurusan_subject_4', 'jurusan_subject_5', 'jurusan_subject_6',
+        'jurusan_nilai_1', 'jurusan_nilai_2', 'jurusan_nilai_3',
+        'jurusan_nilai_4', 'jurusan_nilai_5', 'jurusan_nilai_6',
     ];
 
     protected $casts = [
-        'nilai_tugas' => 'decimal:2',
-        'nilai_uts' => 'decimal:2',
-        'nilai_uas' => 'decimal:2',
-        'nilai_akhir' => 'decimal:2',
+        'nilai' => 'decimal:2',
+        'jurusan_nilai_1' => 'decimal:2',
+        'jurusan_nilai_2' => 'decimal:2',
+        'jurusan_nilai_3' => 'decimal:2',
+        'jurusan_nilai_4' => 'decimal:2',
+        'jurusan_nilai_5' => 'decimal:2',
+        'jurusan_nilai_6' => 'decimal:2',
     ];
 
     public function student()
@@ -56,18 +60,9 @@ class Grade extends Model
         return $this->belongsTo(Semester::class);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($grade) {
-            $grade->nilai_akhir = ($grade->nilai_tugas * 0.3) + ($grade->nilai_uts * 0.3) + ($grade->nilai_uas * 0.4);
-        });
-    }
-
     public function getPredikatAttribute()
     {
-        $nilai = $this->nilai_akhir;
+        $nilai = $this->nilai;
         if ($nilai >= 85) return 'A';
         if ($nilai >= 75) return 'B';
         if ($nilai >= 65) return 'C';

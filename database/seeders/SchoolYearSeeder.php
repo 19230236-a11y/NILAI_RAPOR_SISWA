@@ -12,11 +12,14 @@ class SchoolYearSeeder extends Seeder
      */
     public function run(): void
     {
-        $years = [
-            '2023/2024',
-            '2024/2025',
-            '2025/2026',
-        ];
+        // Generate school years from 2010/2011 to 2040/2041 (30 years range)
+        $years = [];
+        $startYear = 2010;
+        $endYear = 2040;
+        
+        for ($i = $startYear; $i < $endYear; $i++) {
+            $years[] = $i . '/' . ($i + 1);
+        }
         
         foreach ($years as $year) {
             SchoolYear::firstOrCreate(['year' => $year]);

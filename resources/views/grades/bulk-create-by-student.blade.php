@@ -22,17 +22,29 @@
             
             <!-- Filter Section -->
             <div class="row g-3 mb-4">
-                <div class="col-12 col-md-4">
+                <div class="col-12">
                     <label class="form-label">Kelas <span class="text-danger">*</span></label>
                     <select name="class_id" class="form-select" id="classSelect" required>
                         <option value="">-- Pilih Kelas --</option>
-                        @foreach($classes as $class)
-                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @php
+                            // Group classes by level
+                            $classesByLevel = $classes->groupBy('level');
+                        @endphp
+                        @foreach(['X' => 'X', 'XI' => 'XI', 'XII' => 'XII'] as $levelCode => $levelName)
+                            @if($classesByLevel->has($levelCode))
+                                <optgroup label="Jenjang {{ $levelName }}">
+                                    @foreach($classesByLevel[$levelCode]->sortBy('class_code') as $class)
+                                        <option value="{{ $class->id }}" {{ $student->class_id == $class->id ? 'selected' : '' }}>
+                                            {{ $levelName }} {{ $class->program->name }} {{ $class->class_code }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-6">
                     <label class="form-label">Tahun Ajaran <span class="text-danger">*</span></label>
                     <select name="school_year_id" class="form-select" id="yearSelect" required>
                         <option value="">-- Pilih Tahun --</option>
@@ -42,7 +54,7 @@
                     </select>
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-6">
                     <label class="form-label">Semester <span class="text-danger">*</span></label>
                     <select name="semester_id" class="form-select" id="semesterSelect" required>
                         <option value="">-- Pilih Semester --</option>
@@ -55,23 +67,20 @@
 
             <hr class="my-4">
 
-            <!-- Subjects and Grades Section -->
+            <!-- Combined Subjects and Grades Table -->
             <div class="mb-4">
-                <h5 class="mb-3">Nilai Pelajaran</h5>
+                <h5 class="mb-3">Input Nilai Semua Pelajaran</h5>
 
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead class="table-light">
                             <tr>
-                                <th>Mata Pelajaran</th>
-                                <th>Guru</th>
-                                <th style="width: 120px">Tugas (30%)</th>
-                                <th style="width: 120px">UTS (30%)</th>
-                                <th style="width: 120px">UAS (40%)</th>
-                                <th style="width: 120px">Nilai Akhir</th>
+                                <th>Mata Pelajaran Umum</th>
+                                <th style="width: 150px">Nilai (0-100)</th>
                             </tr>
                         </thead>
                         <tbody id="subjectsTableBody">
+                            <!-- Mata Pelajaran Umum -->
                             @foreach($subjects as $subject)
                                 <tr>
                                     <td>
@@ -79,30 +88,30 @@
                                         {{ $subject->name }}
                                     </td>
                                     <td>
-                                        <select name="grades[{{ $loop->index }}][teacher_id]" class="form-select form-select-sm">
-                                            <option value="">-- Pilih Guru --</option>
-                                            @foreach($teachers as $teacher)
-                                                <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="number" name="grades[{{ $loop->index }}][nilai_tugas]" class="form-control form-control-sm nilai-input" 
+                                        <input type="number" name="grades[{{ $loop->index }}][nilai]" class="form-control form-control-sm nilai-input" 
                                                step="0.01" min="0" max="100" placeholder="0-100">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="grades[{{ $loop->index }}][nilai_uts]" class="form-control form-control-sm nilai-input" 
-                                               step="0.01" min="0" max="100" placeholder="0-100">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="grades[{{ $loop->index }}][nilai_uas]" class="form-control form-control-sm nilai-input" 
-                                               step="0.01" min="0" max="100" placeholder="0-100">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control form-control-sm nilai-akhir" disabled placeholder="Otomatis">
                                     </td>
                                 </tr>
                             @endforeach
+
+                            <!-- Divider untuk Mata Pelajaran Jurusan -->
+                            <tr class="table-secondary">
+                                <td colspan="2" class="fw-bold text-muted">Mata Pelajaran Jurusan</td>
+                            </tr>
+
+                            <!-- Mata Pelajaran Jurusan -->
+                            @for($i = 1; $i <= 6; $i++)
+                                <tr>
+                                    <td>
+                                        <input type="text" name="jurusan_subject_{{ $i }}" class="form-control form-control-sm" 
+                                               placeholder="Nama mata pelajaran jurusan...">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="jurusan_nilai_{{ $i }}" class="form-control form-control-sm nilai-input" 
+                                               step="0.01" min="0" max="100" placeholder="0-100">
+                                    </td>
+                                </tr>
+                            @endfor
                         </tbody>
                     </table>
                 </div>
@@ -121,32 +130,11 @@
 </div>
 
 <script>
-    // Calculate final grade on input change
-    document.querySelectorAll('.nilai-input').forEach(input => {
-        input.addEventListener('input', function() {
-            calculateFinalGrade(this);
-        });
-    });
-
-    function calculateFinalGrade(element) {
-        const row = element.closest('tr');
-        const tugas = parseFloat(row.querySelector('input[name*="nilai_tugas"]').value) || 0;
-        const uts = parseFloat(row.querySelector('input[name*="nilai_uts"]').value) || 0;
-        const uas = parseFloat(row.querySelector('input[name*="nilai_uas"]').value) || 0;
-
-        const akhir = (tugas * 0.3) + (uts * 0.3) + (uas * 0.4);
-        row.querySelector('.nilai-akhir').value = akhir.toFixed(2);
-    }
-
     // Form submission
     document.getElementById('bulkGradesForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
         // Validate required fields
-        if (!document.getElementById('classSelect').value) {
-            alert('Pilih kelas terlebih dahulu');
-            return;
-        }
         if (!document.getElementById('yearSelect').value) {
             alert('Pilih tahun ajaran terlebih dahulu');
             return;

@@ -17,38 +17,38 @@
 
 <div class="card border-0 shadow-sm">
     <div class="card-body">
-        <form action="{{ route('grades.store') }}" method="POST">
+        <form action="{{ route('students.grades.store', $student) }}" method="POST">
             @csrf
-            
-            <input type="hidden" name="student_id" value="{{ $student->id }}">
 
             <div class="row g-3">
                 <div class="col-12 col-md-6">
                     <label class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
-                    <select name="subject_id" class="form-select" required>
+                    <select name="subject_id" class="form-select" id="subjectSelect" required>
                         <option value="">-- Pilih Mata Pelajaran --</option>
                         @foreach($subjects as $subject)
-                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <label class="form-label">Guru <span class="text-danger">*</span></label>
-                    <select name="teacher_id" class="form-select" required>
-                        <option value="">-- Pilih Guru --</option>
-                        @foreach($teachers as $teacher)
-                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                            <option value="{{ $subject->id }}" data-name="{{ $subject->name }}">{{ $subject->name }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="col-12 col-md-6">
                     <label class="form-label">Kelas <span class="text-danger">*</span></label>
-                    <select name="class_id" class="form-select" required>
+                    <select name="class_id" class="form-select" id="classSelect" required>
                         <option value="">-- Pilih Kelas --</option>
-                        @foreach($classes as $class)
-                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @php
+                            // Group classes by level
+                            $classesByLevel = $classes->groupBy('level');
+                        @endphp
+                        @foreach(['X' => 'X', 'XI' => 'XI', 'XII' => 'XII'] as $levelCode => $levelName)
+                            @if($classesByLevel->has($levelCode))
+                                <optgroup label="Jenjang {{ $levelName }}">
+                                    @foreach($classesByLevel[$levelCode]->sortBy('class_code') as $class)
+                                        <option value="{{ $class->id }}" {{ $student->class_id == $class->id ? 'selected' : '' }}>
+                                            {{ $levelName }} {{ $class->program->name }} {{ $class->class_code }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
                         @endforeach
                     </select>
                 </div>
@@ -63,7 +63,7 @@
                     </select>
                 </div>
 
-                <div class="col-12">
+                <div class="col-12 col-md-6">
                     <label class="form-label">Semester <span class="text-danger">*</span></label>
                     <select name="semester_id" class="form-select" required>
                         <option value="">-- Pilih Semester --</option>
@@ -75,30 +75,22 @@
 
                 <div class="col-12">
                     <hr class="my-3">
-                    <h5>Nilai Siswa</h5>
                 </div>
 
-                <div class="col-12 col-md-4">
-                    <label class="form-label">Nilai Tugas (30%) <span class="text-danger">*</span></label>
-                    <input type="number" name="nilai_tugas" class="form-control nilai-input" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai_tugas') }}" required>
-                    <small class="text-secondary">Bobot: 30% dari nilai akhir</small>
+                <div class="col-12">
+                    <div id="selectedSubject" class="alert alert-warning d-none" role="alert" style="border-left: 4px solid #ff6b6b;">
+                        <h6 class="mb-2 text-dark">📚 Mata Pelajaran Terpilih</h6>
+                        <h5 class="mb-0" id="subjectName" style="color: #2f3542; font-weight: 600;"></h5>
+                    </div>
+                    <div id="noSubjectAlert" class="alert alert-secondary">
+                        <small class="text-secondary">👆 Silakan pilih mata pelajaran terlebih dahulu</small>
+                    </div>
                 </div>
 
-                <div class="col-12 col-md-4">
-                    <label class="form-label">Nilai UTS (30%) <span class="text-danger">*</span></label>
-                    <input type="number" name="nilai_uts" class="form-control nilai-input" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai_uts') }}" required>
-                    <small class="text-secondary">Bobot: 30% dari nilai akhir</small>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <label class="form-label">Nilai UAS (40%) <span class="text-danger">*</span></label>
-                    <input type="number" name="nilai_uas" class="form-control nilai-input" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai_uas') }}" required>
-                    <small class="text-secondary">Bobot: 40% dari nilai akhir</small>
-                </div>
-
-                <div class="col-12 col-md-12">
-                    <label class="form-label">Nilai Akhir (Otomatis)</label>
-                    <input type="text" class="form-control" id="nilaiAkhir" disabled placeholder="Nilai akhir akan dihitung otomatis">
+                <div class="col-12">
+                    <label class="form-label">Nilai <span class="text-danger">*</span></label>
+                    <input type="number" name="nilai" class="form-control form-control-lg" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai') }}" required style="font-size: 1.1rem;">
+                    <small class="text-secondary">Masukkan nilai mata pelajaran (0-100)</small>
                 </div>
             </div>
 
@@ -114,17 +106,34 @@
     </div>
 </div>
 
-<script>
-    // Calculate final grade
-    document.querySelectorAll('.nilai-input').forEach(input => {
-        input.addEventListener('input', function() {
-            const tugas = parseFloat(document.querySelector('input[name="nilai_tugas"]').value) || 0;
-            const uts = parseFloat(document.querySelector('input[name="nilai_uts"]').value) || 0;
-            const uas = parseFloat(document.querySelector('input[name="nilai_uas"]').value) || 0;
 
-            const akhir = (tugas * 0.3) + (uts * 0.3) + (uas * 0.4);
-            document.getElementById('nilaiAkhir').value = akhir.toFixed(2);
-        });
+
+<script>
+    // Update subject display when subject is selected
+    const subjectSelect = document.getElementById('subjectSelect');
+    const selectedSubjectDiv = document.getElementById('selectedSubject');
+    const noSubjectAlert = document.getElementById('noSubjectAlert');
+    const subjectNameSpan = document.getElementById('subjectName');
+    
+    // Initial state
+    updateSubjectDisplay();
+    
+    subjectSelect.addEventListener('change', function() {
+        updateSubjectDisplay();
     });
+    
+    function updateSubjectDisplay() {
+        const selectedOption = subjectSelect.options[subjectSelect.selectedIndex];
+        const subjectName = selectedOption.getAttribute('data-name');
+        
+        if (subjectName) {
+            subjectNameSpan.textContent = subjectName;
+            selectedSubjectDiv.classList.remove('d-none');
+            noSubjectAlert.classList.add('d-none');
+        } else {
+            selectedSubjectDiv.classList.add('d-none');
+            noSubjectAlert.classList.remove('d-none');
+        }
+    }
 </script>
 @endsection

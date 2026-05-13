@@ -13,10 +13,20 @@
             </li>
 
             <!-- Program Items from Database -->
-            @forelse(\App\Models\Program::orderBy('name')->get() as $program)
+            @forelse($programs ?? [] as $program)
                 <li class="nav-item {{ request()->is('programs/' . $program->id . '*') ? 'active' : '' }}">
                     <a href="{{ route('programs.show', $program) }}" class="nav-link">
-                        <i class="fas fa-graduation-cap"></i>
+                        @php
+                            $logoName = match($program->code) {
+                                'FK' => 'Logo-Farmasi.png',
+                                'AK' => 'Logo-Keperawatan.png',
+                                'TKJ' => 'Logo-TKJ.png',
+                                'TSM' => 'Logo-TBSM.png',
+                                'TKR' => 'Logo-TKRO.png',
+                                default => 'logo.png'
+                            };
+                        @endphp
+                        <img src="{{ asset('img/' . $logoName) }}" alt="{{ $program->name }}" class="program-logo">
                         <span>{{ $program->name }}</span>
                     </a>
                 </li>

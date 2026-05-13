@@ -1,10 +1,10 @@
-@extends('layouts.auth')
-
-@section('title', 'Reset Password')
-
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/bootstrap-social/bootstrap-social.css') }}">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atur Ulang Password - SMK BERSAMA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -12,6 +12,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Poppins', sans-serif;
         }
 
         .reset-container {
@@ -21,6 +22,7 @@
             overflow: hidden;
             max-width: 900px;
             width: 100%;
+            padding: 0;
         }
 
         .reset-wrapper {
@@ -37,25 +39,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .reset-left::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(102, 126, 234, 0.85);
-            z-index: 1;
-        }
-
-        .reset-left > * {
-            position: relative;
-            z-index: 2;
+            width: 40%;
         }
 
         .school-logo {
@@ -76,7 +60,6 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
-            letter-spacing: 0.5px;
         }
 
         .school-subtitle {
@@ -117,6 +100,7 @@
             justify-content: center;
             flex: 1;
             background: white;
+            width: 60%;
         }
 
         .reset-form h1 {
@@ -151,16 +135,13 @@
             font-size: 14px;
             transition: all 0.3s ease;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .form-group input:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             outline: none;
-        }
-
-        .form-group input.is-invalid {
-            border-color: #dc3545;
         }
 
         .password-strength {
@@ -204,10 +185,7 @@
         .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-submit:active {
-            transform: translateY(0);
+            color: white;
         }
 
         .reset-footer {
@@ -221,7 +199,6 @@
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s ease;
         }
 
         .reset-footer a:hover {
@@ -248,31 +225,24 @@
                 min-height: auto;
             }
 
-            .reset-left {
-                padding: 30px;
-                min-height: 250px;
+            .reset-left, .reset-right {
+                width: 100%;
             }
 
-            .reset-right {
-                padding: 30px;
+            .reset-left {
+                min-height: 250px;
             }
 
             .reset-form h1 {
                 font-size: 24px;
             }
-
-            .school-name {
-                font-size: 20px;
-            }
         }
     </style>
-@endpush
-
-@section('main')
+</head>
+<body>
     <div class="reset-container">
         <div class="reset-wrapper">
-            <!-- Left Side - Branding -->
-            <div class="reset-left" style="background-image: url('{{ asset('img/smk-building.jpg') }}');">
+            <div class="reset-left">
                 <div class="school-logo">✓</div>
                 <div class="school-name">SMK BERSAMA</div>
                 <div class="school-subtitle">
@@ -295,7 +265,6 @@
                 </div>
             </div>
 
-            <!-- Right Side - Form -->
             <div class="reset-right">
                 <div class="reset-form">
                     <h1>Atur Ulang Password</h1>
@@ -314,21 +283,16 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('password.update') }}" class="needs-validation" novalidate="">
+                    <form method="POST" action="{{ route('password.update') }}">
                         @csrf
                         <input type="hidden" name="token" value="{{ request()->route('token') }}">
 
                         <div class="form-group">
                             <label for="email">Email</label>
                             <input id="email" type="email" 
-                                class="form-control @error('email') is-invalid @enderror"
+                                class="form-control"
                                 value="{{ request()->query('email', old('email', '')) }}" name="email" 
                                 placeholder="Masukkan email Anda" required readonly>
-                            @error('email')
-                                <div class="invalid-feedback" style="display: block;">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
 
                         <div class="form-group">
@@ -343,11 +307,6 @@
                                     <div class="strength-bar-fill" id="strengthBar"></div>
                                 </div>
                             </div>
-                            @error('password')
-                                <div class="invalid-feedback" style="display: block;">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
 
                         <div class="form-group">
@@ -355,11 +314,6 @@
                             <input id="password_confirmation" type="password" 
                                 class="form-control @error('password_confirmation') is-invalid @enderror"
                                 name="password_confirmation" placeholder="Ulangi password baru Anda" required>
-                            @error('password_confirmation')
-                                <div class="invalid-feedback" style="display: block;">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
 
                         <button type="submit" class="btn btn-submit">
@@ -374,9 +328,7 @@
             </div>
         </div>
     </div>
-@endsection
 
-@push('scripts')
     <script>
         function checkPasswordStrength() {
             const password = document.getElementById('password').value;
@@ -409,4 +361,5 @@
             }
         }
     </script>
-@endpush
+</body>
+</html>

@@ -1,10 +1,10 @@
-@extends('layouts.auth')
-
-@section('title', 'Register')
-
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/bootstrap-social/bootstrap-social.css') }}">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - SMK BERSAMA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -12,6 +12,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Poppins', sans-serif;
             padding: 20px 0;
         }
 
@@ -22,6 +23,7 @@
             overflow: hidden;
             max-width: 900px;
             width: 100%;
+            padding: 0;
         }
 
         .register-wrapper {
@@ -38,25 +40,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .register-left::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(102, 126, 234, 0.85);
-            z-index: 1;
-        }
-
-        .register-left > * {
-            position: relative;
-            z-index: 2;
+            width: 40%;
         }
 
         .school-logo {
@@ -77,7 +61,6 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
-            letter-spacing: 0.5px;
         }
 
         .school-subtitle {
@@ -91,11 +74,12 @@
             text-align: left;
             font-size: 13px;
             opacity: 0.9;
+            list-style: none;
+            padding: 0;
         }
 
         .register-benefits li {
             margin-bottom: 12px;
-            list-style: none;
             padding-left: 25px;
             position: relative;
         }
@@ -105,7 +89,6 @@
             position: absolute;
             left: 0;
             font-weight: bold;
-            font-size: 16px;
         }
 
         .register-right {
@@ -114,6 +97,7 @@
             background: white;
             overflow-y: auto;
             max-height: 90vh;
+            width: 60%;
         }
 
         .register-form h1 {
@@ -155,6 +139,7 @@
             font-size: 14px;
             transition: all 0.3s ease;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .form-group input:focus,
@@ -162,11 +147,6 @@
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             outline: none;
-        }
-
-        .form-group input.is-invalid,
-        .form-group select.is-invalid {
-            border-color: #dc3545;
         }
 
         .btn-register {
@@ -186,10 +166,7 @@
         .btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-register:active {
-            transform: translateY(0);
+            color: white;
         }
 
         .register-footer {
@@ -203,7 +180,6 @@
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s ease;
         }
 
         .register-footer a:hover {
@@ -229,13 +205,15 @@
                 flex-direction: column;
             }
 
+            .register-left, .register-right {
+                width: 100%;
+            }
+
             .register-left {
-                padding: 30px;
                 min-height: 200px;
             }
 
             .register-right {
-                padding: 30px;
                 max-height: none;
             }
 
@@ -243,22 +221,16 @@
                 font-size: 24px;
             }
 
-            .school-name {
-                font-size: 20px;
-            }
-
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
     </style>
-@endpush
-
-@section('main')
+</head>
+<body>
     <div class="register-container">
         <div class="register-wrapper">
-            <!-- Left Side - Branding -->
-            <div class="register-left" style="background-image: url('{{ asset('img/smk-building.jpg') }}');">
+            <div class="register-left">
                 <div class="school-logo">📚</div>
                 <div class="school-name">SMK BERSAMA</div>
                 <div class="school-subtitle">
@@ -273,11 +245,10 @@
                 </ul>
             </div>
 
-            <!-- Right Side - Register Form -->
             <div class="register-right">
                 <div class="register-form">
                     <h1>Buat Akun Baru</h1>
-                    <p class="subtitle">Daftarkan diri Anda untuk mengakses sistem</p>
+                    <p class="subtitle">Buat akun pengguna untuk Staff TU</p>
 
                     @if ($errors->any())
                         <div class="alert alert-danger">
@@ -290,7 +261,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('register') }}" class="needs-validation" novalidate="">
+                    <form method="POST" action="{{ route('register') }}">
                         @csrf
 
                         <div class="form-row">
@@ -298,26 +269,16 @@
                                 <label for="name">Nama Lengkap</label>
                                 <input id="name" type="text" 
                                     class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ old('name') }}" name="name" tabindex="1"
+                                    value="{{ old('name') }}" name="name"
                                     placeholder="Masukkan nama lengkap Anda" required>
-                                @error('name')
-                                    <div class="invalid-feedback" style="display: block;">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="phone">No. Telepon</label>
                                 <input id="phone" type="tel" 
                                     class="form-control @error('phone') is-invalid @enderror"
-                                    value="{{ old('phone') }}" name="phone" tabindex="2"
+                                    value="{{ old('phone') }}" name="phone"
                                     placeholder="08xxxxxxxxxx" required>
-                                @error('phone')
-                                    <div class="invalid-feedback" style="display: block;">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
                         </div>
 
@@ -325,13 +286,8 @@
                             <label for="email">Email</label>
                             <input id="email" type="email" 
                                 class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email') }}" name="email" tabindex="3"
+                                value="{{ old('email') }}" name="email"
                                 placeholder="Masukkan alamat email Anda" required>
-                            @error('email')
-                                <div class="invalid-feedback" style="display: block;">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
 
                         <div class="form-row">
@@ -339,45 +295,30 @@
                                 <label for="password">Password</label>
                                 <input id="password" type="password" 
                                     class="form-control @error('password') is-invalid @enderror"
-                                    name="password" tabindex="4"
+                                    name="password"
                                     placeholder="Minimal 8 karakter" required>
-                                @error('password')
-                                    <div class="invalid-feedback" style="display: block;">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="password_confirmation">Konfirmasi Password</label>
                                 <input id="password_confirmation" type="password" 
                                     class="form-control @error('password_confirmation') is-invalid @enderror"
-                                    name="password_confirmation" tabindex="5"
+                                    name="password_confirmation"
                                     placeholder="Ulangi password Anda" required>
-                                @error('password_confirmation')
-                                    <div class="invalid-feedback" style="display: block;">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-register" tabindex="6">
+                        <button type="submit" class="btn btn-register">
                             Daftar Sekarang
                         </button>
                     </form>
 
                     <div class="register-footer">
-                        Sudah memiliki akun? <a href="{{ route('login') }}">Masuk di sini</a>
+                        <a href="{{ route('dashboard') }}">← Kembali ke Dashboard</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-
-    <!-- Page Specific JS File -->
-@endpush
+</body>
+</html>

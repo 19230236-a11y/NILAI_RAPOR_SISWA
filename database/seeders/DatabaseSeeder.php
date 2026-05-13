@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             SchoolYearSeeder::class,
             SemesterSeeder::class,
             SubjectSeeder::class,
+            TeacherSeeder::class,
+            GradeSeeder::class,
         ]);
     }
 }

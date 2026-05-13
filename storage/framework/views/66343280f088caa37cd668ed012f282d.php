@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sistem Rapor Siswa')</title>
+    <title><?php echo $__env->yieldContent('title', 'Sistem Rapor Siswa'); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
@@ -543,7 +543,7 @@
             overflow-x: hidden;
         }
     </style>
-    @stack('style')
+    <?php echo $__env->yieldPushContent('style'); ?>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
@@ -551,7 +551,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <a href="{{ route('dashboard') }}" title="Kembali ke Dashboard">
+            <a href="<?php echo e(route('dashboard')); ?>" title="Kembali ke Dashboard">
                 <img src="/img/logo.png" alt="Logo SMK SEHATI" style="width: 50px; height: 50px; object-fit: contain;">
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem; font-size: 0.95rem; font-weight: 700; line-height: 1.2;">
                     <span>SMK SEHATI<br>KARAWANG</span>
@@ -561,21 +561,21 @@
 
         <nav class="sidebar-menu">
             <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <a href="<?php echo e(route('dashboard')); ?>" class="menu-item <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>">
                 <i class="bi bi-speedometer2"></i>
                 <span>Dashboard</span>
             </a>
 
-            @auth
-                @if(Auth::user()->role === 'staff_tu')
-                    @php
+            <?php if(auth()->guard()->check()): ?>
+                <?php if(Auth::user()->role === 'staff_tu'): ?>
+                    <?php
                         $programs = \App\Models\Program::all();
-                    @endphp
+                    ?>
 
                     <!-- Program Links -->
-                    @foreach($programs as $program)
-                    <a href="{{ route('students.index', ['program' => $program->id]) }}" class="menu-item {{ request()->input('program') == $program->id ? 'active' : '' }}">
-                        @php
+                    <?php $__currentLoopData = $programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $program): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e(route('students.index', ['program' => $program->id])); ?>" class="menu-item <?php echo e(request()->input('program') == $program->id ? 'active' : ''); ?>">
+                        <?php
                             $logoName = match($program->code) {
                                 'FK' => 'Logo-Farmasi.png',
                                 'AK' => 'Logo-Keperawatan.png',
@@ -584,49 +584,50 @@
                                 'TKR' => 'Logo-TKRO.png',
                                 default => 'logo.png'
                             };
-                        @endphp
-                        <img src="{{ asset('img/' . $logoName) }}" alt="{{ $program->name }}" class="program-logo">
-                        <span>{{ $program->name }}</span>
+                        ?>
+                        <img src="<?php echo e(asset('img/' . $logoName)); ?>" alt="<?php echo e($program->name); ?>" class="program-logo">
+                        <span><?php echo e($program->name); ?></span>
                     </a>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                     <!-- NOTE: Removed global Input Nilai menu items; input/laporan nilai available per-program -->
-                @elseif(Auth::user()->role === 'kepala_sekolah')
-                    <a href="{{ route('users.index') }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                <?php elseif(Auth::user()->role === 'kepala_sekolah'): ?>
+                    <a href="<?php echo e(route('users.index')); ?>" class="menu-item <?php echo e(request()->routeIs('users.*') ? 'active' : ''); ?>">
                         <i class="bi bi-people-fill"></i>
                         <span>Kelola Akun</span>
                     </a>
-                @endif
+                <?php endif; ?>
 
-                @if(Auth::user()->role === 'admin')
-                    <a href="{{ route('users.index') }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                <?php if(Auth::user()->role === 'admin'): ?>
+                    <a href="<?php echo e(route('users.index')); ?>" class="menu-item <?php echo e(request()->routeIs('users.*') ? 'active' : ''); ?>">
                         <i class="bi bi-people-fill"></i>
                         <span>Pengguna</span>
                     </a>
-                @endif
-            @endauth
+                <?php endif; ?>
+            <?php endif; ?>
         </nav>
 
-        @auth
+        <?php if(auth()->guard()->check()): ?>
         <div class="sidebar-footer">
-            <div class="user-profile" title="{{ Auth::user()->name }} - {{ Auth::user()->role_label }}">
-                @php
+            <div class="user-profile" title="<?php echo e(Auth::user()->name); ?> - <?php echo e(Auth::user()->role_label); ?>">
+                <?php
                     $names = explode(' ', Auth::user()->name);
                     $initials = strtoupper(substr($names[0], 0, 1)) . (isset($names[1]) ? strtoupper(substr($names[1], 0, 1)) : '');
-                @endphp
-                {{ $initials }}
-                <span class="user-name">{{ Auth::user()->name }}</span>
-                <span class="user-role">{{ Auth::user()->role_label }}</span>
+                ?>
+                <?php echo e($initials); ?>
+
+                <span class="user-name"><?php echo e(Auth::user()->name); ?></span>
+                <span class="user-role"><?php echo e(Auth::user()->role_label); ?></span>
             </div>
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                @csrf
+            <form method="POST" action="<?php echo e(route('logout')); ?>" style="margin: 0;">
+                <?php echo csrf_field(); ?>
                 <button type="submit" class="sidebar-logout">
                     <i class="bi bi-box-arrow-right"></i>
                     <span>Logout</span>
                 </button>
             </form>
         </div>
-        @endauth
+        <?php endif; ?>
     </aside>
 
     <button class="btn btn-dark sidebar-toggle d-lg-none" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
@@ -634,13 +635,14 @@
     </button>
 
     <main id="main-content" style="padding: 2rem 1.5rem;">
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="alert alert-success border-0 shadow-sm" role="status" aria-live="polite">
-                {{ session('success') }}
-            </div>
-        @endif
+                <?php echo e(session('success')); ?>
 
-        @php
+            </div>
+        <?php endif; ?>
+
+        <?php
             $programId = request('program') ?? request()->route('program');
             $program = null;
             if ($programId) {
@@ -648,12 +650,12 @@
             }
             $isStudentDetailPage = request()->routeIs('students.show');
             $isGradeInputPage = request()->routeIs('students.grades.*', 'programs.grades.*');
-        @endphp
+        ?>
 
-        @if($program && !$isStudentDetailPage && !$isGradeInputPage)
+        <?php if($program && !$isStudentDetailPage && !$isGradeInputPage): ?>
         <div class="hero-strip mb-4">
             <div class="d-flex align-items-center gap-3">
-                @php
+                <?php
                     $logoName = match($program->code) {
                         'FK' => 'Logo-Farmasi.png',
                         'AK' => 'Logo-Keperawatan.png',
@@ -662,42 +664,43 @@
                         'TKR' => 'Logo-TKRO.png',
                         default => 'logo.png'
                     };
-                @endphp
-                <img src="{{ asset('img/' . $logoName) }}" alt="{{ $program->name }}" style="width: 80px; height: 80px; object-fit: contain; flex-shrink: 0;">
+                ?>
+                <img src="<?php echo e(asset('img/' . $logoName)); ?>" alt="<?php echo e($program->name); ?>" style="width: 80px; height: 80px; object-fit: contain; flex-shrink: 0;">
                 <div>
-                    <h1 style="font-size: 2.5rem; font-weight: 700; margin: 0; color: #f4f8ff;">{{ $program->name }}</h1>
+                    <h1 style="font-size: 2.5rem; font-weight: 700; margin: 0; color: #f4f8ff;"><?php echo e($program->name); ?></h1>
                     <p style="font-size: 0.95rem; font-weight: 500; margin-top: 0.5rem; color: rgba(244, 248, 255, 0.9);">Sistem Manajemen Rapor Siswa</p>
                 </div>
             </div>
         </div>
-        @elseif(!$isStudentDetailPage && !$isGradeInputPage)
+        <?php elseif(!$isStudentDetailPage && !$isGradeInputPage): ?>
         <div class="hero-strip mb-4">
             <h1 style="font-size: 2.5rem; font-weight: 700; margin: 0; color: #f4f8ff;">BUKU INDUK REGISTER PESERTA DIDIK</h1>
             <p style="font-size: 0.95rem; font-weight: 500; margin-top: 0.5rem; color: rgba(244, 248, 255, 0.9);">Sistem Manajemen Rapor Siswa</p>
         </div>
-        @endif
+        <?php endif; ?>
 
         <section class="glass-panel p-3 p-lg-4">
-            @if(View::hasSection('content'))
-                @yield('content')
-            @else
-                @yield('main')
-            @endif
+            <?php if(View::hasSection('content')): ?>
+                <?php echo $__env->yieldContent('content'); ?>
+            <?php else: ?>
+                <?php echo $__env->yieldContent('main'); ?>
+            <?php endif; ?>
         </section>
     </main>
 
-    @if(session('success'))
+    <?php if(session('success')): ?>
         <div class="toast-container position-fixed bottom-0 end-0 p-3">
             <div id="successToast" class="toast text-bg-success border-0" role="status" aria-live="polite" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
-                        {{ session('success') }}
+                        <?php echo e(session('success')); ?>
+
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
         </div>
-    @endif
+    <?php endif; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -734,6 +737,6 @@
             }
         });
     </script>
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
-</html>
+</html><?php /**PATH C:\Project TA\NILAI_RAPOR_SISWA\resources\views/layouts/app.blade.php ENDPATH**/ ?>

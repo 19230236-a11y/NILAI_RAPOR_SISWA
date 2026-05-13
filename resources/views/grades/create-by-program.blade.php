@@ -26,27 +26,17 @@
                     <select name="student_id" class="form-select" id="studentSelect" required>
                         <option value="">-- Pilih Siswa --</option>
                         @foreach($students as $student)
-                            <option value="{{ $student->id }}" data-nis="{{ $student->nis }}">{{ $student->nis }} - {{ $student->name }}</option>
+                            <option value="{{ $student->id }}" data-nis="{{ $student->nis }}" data-name="{{ $student->name }}">{{ $student->nis }} - {{ $student->name }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="col-12 col-md-6">
                     <label class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
-                    <select name="subject_id" class="form-select" required>
+                    <select name="subject_id" class="form-select" id="subjectSelect" required>
                         <option value="">-- Pilih Mata Pelajaran --</option>
                         @foreach($subjects as $subject)
-                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <label class="form-label">Guru <span class="text-danger">*</span></label>
-                    <select name="teacher_id" class="form-select" required>
-                        <option value="">-- Pilih Guru --</option>
-                        @foreach($teachers as $teacher)
-                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                            <option value="{{ $subject->id }}" data-name="{{ $subject->name }}">{{ $subject->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -56,7 +46,7 @@
                     <select name="class_id" class="form-select" required>
                         <option value="">-- Pilih Kelas --</option>
                         @foreach($classes as $class)
-                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                            <option value="{{ $class->id }}">{{ $class->display_name_without_level }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -84,29 +74,16 @@
                 <div class="col-12">
                     <hr class="my-3">
                     <h5>Nilai Siswa</h5>
+                    <div id="selectedInfo" class="alert alert-info d-none">
+                        <div><strong>Siswa:</strong> <span id="studentName"></span></div>
+                        <div><strong>Mata Pelajaran:</strong> <span id="subjectName"></span></div>
+                    </div>
                 </div>
 
-                <div class="col-12 col-md-4">
-                    <label class="form-label">Nilai Tugas (30%) <span class="text-danger">*</span></label>
-                    <input type="number" name="nilai_tugas" class="form-control nilai-input" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai_tugas') }}" required>
-                    <small class="text-secondary">Bobot: 30% dari nilai akhir</small>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <label class="form-label">Nilai UTS (30%) <span class="text-danger">*</span></label>
-                    <input type="number" name="nilai_uts" class="form-control nilai-input" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai_uts') }}" required>
-                    <small class="text-secondary">Bobot: 30% dari nilai akhir</small>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <label class="form-label">Nilai UAS (40%) <span class="text-danger">*</span></label>
-                    <input type="number" name="nilai_uas" class="form-control nilai-input" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai_uas') }}" required>
-                    <small class="text-secondary">Bobot: 40% dari nilai akhir</small>
-                </div>
-
-                <div class="col-12 col-md-12">
-                    <label class="form-label">Nilai Akhir (Otomatis)</label>
-                    <input type="text" class="form-control" id="nilaiAkhir" disabled placeholder="Nilai akhir akan dihitung otomatis">
+                <div class="col-12">
+                    <label class="form-label">Nilai <span class="text-danger">*</span></label>
+                    <input type="number" name="nilai" class="form-control" step="0.01" min="0" max="100" placeholder="0-100" value="{{ old('nilai') }}" required>
+                    <small class="text-secondary">Masukkan nilai mata pelajaran (0-100)</small>
                 </div>
             </div>
 
@@ -123,16 +100,28 @@
 </div>
 
 <script>
-    // Calculate final grade
-    document.querySelectorAll('.nilai-input').forEach(input => {
-        input.addEventListener('input', function() {
-            const tugas = parseFloat(document.querySelector('input[name="nilai_tugas"]').value) || 0;
-            const uts = parseFloat(document.querySelector('input[name="nilai_uts"]').value) || 0;
-            const uas = parseFloat(document.querySelector('input[name="nilai_uas"]').value) || 0;
-
-            const akhir = (tugas * 0.3) + (uts * 0.3) + (uas * 0.4);
-            document.getElementById('nilaiAkhir').value = akhir.toFixed(2);
-        });
-    });
+    // Update selected info display
+    function updateSelectedInfo() {
+        const studentSelect = document.getElementById('studentSelect');
+        const subjectSelect = document.getElementById('subjectSelect');
+        const selectedInfo = document.getElementById('selectedInfo');
+        
+        const studentOption = studentSelect.options[studentSelect.selectedIndex];
+        const subjectOption = subjectSelect.options[subjectSelect.selectedIndex];
+        
+        const studentName = studentOption.getAttribute('data-name');
+        const subjectName = subjectOption.getAttribute('data-name');
+        
+        if (studentName && subjectName) {
+            document.getElementById('studentName').textContent = studentName;
+            document.getElementById('subjectName').textContent = subjectName;
+            selectedInfo.classList.remove('d-none');
+        } else {
+            selectedInfo.classList.add('d-none');
+        }
+    }
+    
+    document.getElementById('studentSelect').addEventListener('change', updateSelectedInfo);
+    document.getElementById('subjectSelect').addEventListener('change', updateSelectedInfo);
 </script>
 @endsection
