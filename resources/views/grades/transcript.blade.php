@@ -82,10 +82,7 @@
                         <tr>
                             <th>Mapel</th>
                             <th>Guru</th>
-                            <th class="text-center">Tugas (30%)</th>
-                            <th class="text-center">UTS (30%)</th>
-                            <th class="text-center">UAS (40%)</th>
-                            <th class="text-center">Nilai Akhir</th>
+                            <th class="text-center">Nilai</th>
                             <th class="text-center">Grade</th>
                         </tr>
                     </thead>
@@ -97,22 +94,19 @@
                         @foreach($periodGrades as $grade)
                             @php
                                 $grade_letter = 'E';
-                                if ($grade->nilai_akhir >= 85) $grade_letter = 'A';
-                                elseif ($grade->nilai_akhir >= 75) $grade_letter = 'B';
-                                elseif ($grade->nilai_akhir >= 65) $grade_letter = 'C';
-                                elseif ($grade->nilai_akhir >= 55) $grade_letter = 'D';
+                                if ($grade->nilai >= 85) $grade_letter = 'A';
+                                elseif ($grade->nilai >= 75) $grade_letter = 'B';
+                                elseif ($grade->nilai >= 65) $grade_letter = 'C';
+                                elseif ($grade->nilai >= 55) $grade_letter = 'D';
                                 
-                                $totalNilai += $grade->nilai_akhir;
+                                $totalNilai += $grade->nilai;
                                 $totalGrade++;
                             @endphp
                             <tr>
                                 <td class="fw-semibold">{{ $grade->subject->name }}</td>
                                 <td>{{ $grade->teacher->name }}</td>
-                                <td class="text-center">{{ number_format($grade->nilai_tugas, 2) }}</td>
-                                <td class="text-center">{{ number_format($grade->nilai_uts, 2) }}</td>
-                                <td class="text-center">{{ number_format($grade->nilai_uas, 2) }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-primary">{{ number_format($grade->nilai_akhir, 2) }}</span>
+                                    <span class="badge bg-primary">{{ number_format($grade->nilai, 2) }}</span>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-{{ $grade_letter == 'A' ? 'success' : ($grade_letter == 'B' ? 'info' : ($grade_letter == 'C' ? 'warning' : ($grade_letter == 'D' ? 'danger' : 'secondary'))) }}">
@@ -124,7 +118,7 @@
                         
                         @if($totalGrade > 0)
                             <tr class="table-light fw-bold">
-                                <td colspan="5" class="text-end">Rata-rata Nilai:</td>
+                                <td colspan="2" class="text-end">Rata-rata Nilai:</td>
                                 <td class="text-center">
                                     <span class="badge bg-info">{{ number_format($totalNilai / $totalGrade, 2) }}</span>
                                 </td>
@@ -144,7 +138,7 @@
                 <h5 class="card-title">Statistik Per Jurusan</h5>
                 
                 @php
-                    $allNilai = $grades->pluck('nilai_akhir');
+                    $allNilai = $grades->pluck('nilai');
                     $rataRata = $allNilai->avg();
                     $tertinggi = $allNilai->max();
                     $terendah = $allNilai->min();

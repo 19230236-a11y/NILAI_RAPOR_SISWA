@@ -1,11 +1,9 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Dashboard - Staff TU'); ?>
 
-@section('title', 'Dashboard - Staff TU')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row g-4 mb-4">
     <div class="col-12">
-        <h2 class="h4">Selamat Datang, {{ Auth::user()->name }}!</h2>
+        <h2 class="h4">Selamat Datang, <?php echo e(Auth::user()->name); ?>!</h2>
         <p class="text-muted">Panel Staff Tata Usaha - Kelola data siswa, kelas, dan nilai per jurusan.</p>
     </div>
 </div>
@@ -18,7 +16,7 @@
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
                         <p class="text-white mb-2 small fw-semibold" style="opacity: 0.9;">Total Siswa</p>
-                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ $stats['total_siswa'] }}</h2>
+                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?php echo e($stats['total_siswa']); ?></h2>
                     </div>
                     <div class="text-white" style="opacity: 0.15; font-size: 4rem; line-height: 1;">
                         <i class="bi bi-people"></i>
@@ -35,7 +33,7 @@
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
                         <p class="text-white mb-2 small fw-semibold" style="opacity: 0.9;">Total Jurusan</p>
-                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ $stats['total_jurusan'] }}</h2>
+                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?php echo e($stats['total_jurusan']); ?></h2>
                     </div>
                     <div class="text-white" style="opacity: 0.15; font-size: 4rem; line-height: 1;">
                         <i class="bi bi-bookmark"></i>
@@ -52,7 +50,7 @@
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
                         <p class="text-white mb-2 small fw-semibold" style="opacity: 0.9;">Mata Pelajaran</p>
-                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ $stats['total_mapel'] ?? 0 }}</h2>
+                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?php echo e($stats['total_mapel'] ?? 0); ?></h2>
                     </div>
                     <div class="text-white" style="opacity: 0.15; font-size: 4rem; line-height: 1;">
                         <i class="bi bi-book"></i>
@@ -69,7 +67,7 @@
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
                         <p class="text-white mb-2 small fw-semibold" style="opacity: 0.9;">Total Kelas</p>
-                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ $stats['total_kelas'] ?? 0 }}</h2>
+                        <h2 class="text-white mb-0 fw-bold" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?php echo e($stats['total_kelas'] ?? 0); ?></h2>
                     </div>
                     <div class="text-white" style="opacity: 0.15; font-size: 4rem; line-height: 1;">
                         <i class="bi bi-door-open"></i>
@@ -87,4 +85,5 @@
 }
 </style>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Project TA\NILAI_RAPOR_SISWA\resources\views/dashboard/staff_tu.blade.php ENDPATH**/ ?>

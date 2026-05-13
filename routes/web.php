@@ -19,7 +19,7 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     // Login View & POST
     Route::get('/login', function () {
-        return view('pages.auth.auth-login-new');
+        return view('pages.auth.auth-login');
     })->name('login');
     
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
@@ -37,21 +37,21 @@ Route::middleware('auth')->get('/dashboard', [DashboardController::class, 'index
 Route::middleware(['auth', 'role:admin|kepala_sekolah'])->group(function () {
     // Register - Hanya Admin/Kepala Sekolah yang bisa membuat akun
     Route::get('/register', function () {
-        return view('pages.auth.auth-register-new');
+        return view('pages.auth.auth-register');
     })->name('register');
     
     Route::post('/register', [RegisteredUserController::class, 'store']);
     
     // Forgot Password & Reset Password - Hanya Admin yang bisa reset password
     Route::get('/forgot-password', function () {
-        return view('pages.auth.auth-forgot-password-new');
+        return view('pages.auth.auth-forgot-password');
     })->name('password.request');
     
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
     
     Route::get('/reset-password/{token}', function ($token) {
-        return view('pages.auth.auth-reset-password-new', ['request' => request()]);
+        return view('pages.auth.auth-reset-password', ['request' => request()]);
     })->name('password.reset');
     
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
@@ -79,6 +79,10 @@ Route::middleware(['auth', 'role:staff_tu'])->group(function () {
     Route::get('students/{student}/grades/bulk-create', [GradeController::class, 'bulkCreateByStudent'])->name('students.grades.bulk-create');
     Route::post('students/{student}/grades/bulk-store', [GradeController::class, 'bulkStoreByStudent'])->name('students.grades.bulk-store');
     Route::get('students/{student}/grades/create', [GradeController::class, 'createByStudent'])->name('students.grades.create');
+    Route::post('students/{student}/grades/store', [GradeController::class, 'storeByStudent'])->name('students.grades.store');
+    Route::get('students/{student}/semester/{semesterId}/year/{yearId}/edit', [GradeController::class, 'editSemesterGrades'])->name('grades.semester-edit');
+    Route::patch('students/{student}/semester/{semesterId}/year/{yearId}', [GradeController::class, 'updateSemesterGrades'])->name('grades.semester-update');
+    Route::delete('students/{student}/semester/{semesterId}/year/{yearId}', [GradeController::class, 'destroySemesterGrades'])->name('grades.semester-destroy');
     
     // Program-specific grade input
     Route::get('programs/{program}/grades/bulk-create', [GradeController::class, 'bulkCreateByProgram'])->name('programs.grades.bulk-create');

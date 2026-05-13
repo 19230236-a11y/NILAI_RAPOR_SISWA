@@ -36,7 +36,6 @@ class User extends Authenticatable
         'face_embedding',
         'image_url',
         'fcm_token',
-        'nisn',
         'kelas',
         'tahun_lulus',
         'nip',

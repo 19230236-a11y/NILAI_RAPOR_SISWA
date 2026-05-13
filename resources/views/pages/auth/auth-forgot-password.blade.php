@@ -1,10 +1,10 @@
-@extends('layouts.auth')
-
-@section('title', 'Forgot Password')
-
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/bootstrap-social/bootstrap-social.css') }}">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa Password - SMK BERSAMA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -12,6 +12,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Poppins', sans-serif;
         }
 
         .password-container {
@@ -21,6 +22,7 @@
             overflow: hidden;
             max-width: 900px;
             width: 100%;
+            padding: 0;
         }
 
         .password-wrapper {
@@ -37,25 +39,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .password-left::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(102, 126, 234, 0.85);
-            z-index: 1;
-        }
-
-        .password-left > * {
-            position: relative;
-            z-index: 2;
+            width: 40%;
         }
 
         .school-logo {
@@ -76,7 +60,6 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
-            letter-spacing: 0.5px;
         }
 
         .school-subtitle {
@@ -102,7 +85,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            flex: 1;
+            width: 60%;
             background: white;
         }
 
@@ -139,16 +122,13 @@
             font-size: 14px;
             transition: all 0.3s ease;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .form-group input:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             outline: none;
-        }
-
-        .form-group input.is-invalid {
-            border-color: #dc3545;
         }
 
         .btn-submit {
@@ -168,10 +148,7 @@
         .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-submit:active {
-            transform: translateY(0);
+            color: white;
         }
 
         .password-footer {
@@ -185,7 +162,6 @@
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s ease;
         }
 
         .password-footer a:hover {
@@ -218,31 +194,24 @@
                 min-height: auto;
             }
 
-            .password-left {
-                padding: 30px;
-                min-height: 200px;
+            .password-left, .password-right {
+                width: 100%;
             }
 
-            .password-right {
-                padding: 30px;
+            .password-left {
+                min-height: 200px;
             }
 
             .password-form h1 {
                 font-size: 24px;
             }
-
-            .school-name {
-                font-size: 20px;
-            }
         }
     </style>
-@endpush
-
-@section('main')
+</head>
+<body>
     <div class="password-container">
         <div class="password-wrapper">
-            <!-- Left Side - Branding -->
-            <div class="password-left" style="background-image: url('{{ asset('img/smk-building.jpg') }}');">
+            <div class="password-left">
                 <div class="school-logo">🔐</div>
                 <div class="school-name">SMK BERSAMA</div>
                 <div class="school-subtitle">
@@ -251,16 +220,15 @@
                 </div>
                 <div class="password-icon">🔑</div>
                 <p style="font-size: 13px; opacity: 0.95;">
-                    Kami akan membantu Anda mengatur ulang password dengan mudah dan aman
+                    Bantu pengguna mengatur ulang password dengan mudah dan aman
                 </p>
             </div>
 
-            <!-- Right Side - Form -->
             <div class="password-right">
                 <div class="password-form">
-                    <h1>Lupa Password?</h1>
+                    <h1>Reset Password Pengguna</h1>
                     <p class="subtitle">
-                        Masukkan alamat email Anda dan kami akan mengirimkan link untuk mengatur ulang password ke email Anda.
+                        Masukkan alamat email pengguna untuk mengirimkan link reset password ke email mereka.
                     </p>
 
                     @if ($errors->any())
@@ -275,15 +243,15 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('password.email') }}" class="needs-validation" novalidate="">
+                    <form method="POST" action="{{ route('password.email') }}">
                         @csrf
 
                         <div class="form-group">
-                            <label for="email">Email</label>
+                            <label for="email">Email Pengguna</label>
                             <input id="email" type="email" 
                                 class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email') }}" name="email" tabindex="1" 
-                                placeholder="Masukkan alamat email Anda" required>
+                                value="{{ old('email') }}" name="email" 
+                                placeholder="Masukkan email staff yang perlu reset password" required>
                             @error('email')
                                 <div class="invalid-feedback" style="display: block;">
                                     {{ $message }}
@@ -291,22 +259,17 @@
                             @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-submit" tabindex="2">
+                        <button type="submit" class="btn btn-submit">
                             Kirim Link Reset Password
                         </button>
                     </form>
 
                     <div class="password-footer">
-                        Ingat password Anda? <a href="{{ route('login') }}">Kembali ke Login</a>
+                        <a href="{{ route('dashboard') }}">← Kembali ke Dashboard</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-
-    <!-- Page Specific JS File -->
-@endpush
+</body>
+</html>

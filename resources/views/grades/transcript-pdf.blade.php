@@ -233,10 +233,7 @@
                                         <tr>
                                             <th>Mapel</th>
                                             <th>Guru</th>
-                                            <th class="text-center">Tugas</th>
-                                            <th class="text-center">UTS</th>
-                                            <th class="text-center">UAS</th>
-                                            <th class="text-center">Nilai Akhir</th>
+                                            <th class="text-center">Nilai</th>
                                             <th class="text-center">Grade</th>
                                         </tr>
                                     </thead>
@@ -244,18 +241,15 @@
                                         @foreach($periodGrades as $grade)
                                             @php
                                                 $predikat = 'E';
-                                                if ($grade->nilai_akhir >= 85) $predikat = 'A';
-                                                elseif ($grade->nilai_akhir >= 75) $predikat = 'B';
-                                                elseif ($grade->nilai_akhir >= 65) $predikat = 'C';
-                                                elseif ($grade->nilai_akhir >= 55) $predikat = 'D';
+                                                if ($grade->nilai >= 85) $predikat = 'A';
+                                                elseif ($grade->nilai >= 75) $predikat = 'B';
+                                                elseif ($grade->nilai >= 65) $predikat = 'C';
+                                                elseif ($grade->nilai >= 55) $predikat = 'D';
                                             @endphp
                                             <tr>
                                                 <td>{{ $grade->subject->name }}</td>
                                                 <td>{{ $grade->teacher->name }}</td>
-                                                <td class="text-center">{{ number_format($grade->nilai_tugas, 2) }}</td>
-                                                <td class="text-center">{{ number_format($grade->nilai_uts, 2) }}</td>
-                                                <td class="text-center">{{ number_format($grade->nilai_uas, 2) }}</td>
-                                                <td class="text-center">{{ number_format($grade->nilai_akhir, 2) }}</td>
+                                                <td class="text-center">{{ number_format($grade->nilai, 2) }}</td>
                                                 <td class="text-center">{{ $predikat }}</td>
                                             </tr>
                                         @endforeach

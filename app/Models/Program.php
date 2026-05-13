@@ -17,4 +17,16 @@ class Program extends Model
     {
         return $this->hasMany(SchoolClass::class);
     }
+
+    public function getLogoPath()
+    {
+        $logoMap = [
+            'FK' => 'Logo-Farmasi.png',
+            'AK' => 'Logo-Keperawatan.png',
+            'TKJ' => 'Logo-TKJ.png',
+            'TSM' => 'Logo-TBSM.png',
+            'TKR' => 'Logo-TKRO.png',
+        ];
+        return $logoMap[$this->code] ?? 'logo.png';
+    }
 }

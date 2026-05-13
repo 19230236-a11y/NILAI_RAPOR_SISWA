@@ -37,7 +37,7 @@
                     <select name="class_id" class="form-select" id="classSelect" required>
                         <option value="">-- Pilih Kelas --</option>
                         @foreach($classes as $class)
-                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                            <option value="{{ $class->id }}">{{ $class->display_name_without_level }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -79,11 +79,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Mata Pelajaran</th>
-                                    <th>Guru</th>
-                                    <th style="width: 120px">Tugas (30%)</th>
-                                    <th style="width: 120px">UTS (30%)</th>
-                                    <th style="width: 120px">UAS (40%)</th>
-                                    <th style="width: 120px">Nilai Akhir</th>
+                                    <th style="width: 150px">Nilai (0-100)</th>
                                 </tr>
                             </thead>
                             <tbody id="subjectsTableBody">
@@ -108,7 +104,6 @@
 
 <script>
     const subjects = @json($subjects);
-    const teachers = @json($teachers);
 
     // Handle student selection
     document.getElementById('studentSelect').addEventListener('change', function() {
@@ -133,45 +128,13 @@
                     ${subject.name}
                 </td>
                 <td>
-                    <select name="grades[${index}][teacher_id]" class="form-select form-select-sm">
-                        <option value="">-- Pilih Guru --</option>
-                        ${teachers.map(teacher => `<option value="${teacher.id}">${teacher.name}</option>`).join('')}
-                    </select>
-                </td>
-                <td>
-                    <input type="number" name="grades[${index}][nilai_tugas]" class="form-control form-control-sm nilai-input" 
+                    <input type="number" name="grades[${index}][nilai]" class="form-control form-control-sm nilai-input" 
                            step="0.01" min="0" max="100" placeholder="0-100">
-                </td>
-                <td>
-                    <input type="number" name="grades[${index}][nilai_uts]" class="form-control form-control-sm nilai-input" 
-                           step="0.01" min="0" max="100" placeholder="0-100">
-                </td>
-                <td>
-                    <input type="number" name="grades[${index}][nilai_uas]" class="form-control form-control-sm nilai-input" 
-                           step="0.01" min="0" max="100" placeholder="0-100">
-                </td>
-                <td>
-                    <input type="text" class="form-control form-control-sm nilai-akhir" disabled placeholder="Otomatis">
                 </td>
             `;
             tbody.appendChild(row);
         });
-
-        // Add event listeners for calculating final grades
-        document.querySelectorAll('.nilai-input').forEach(input => {
-            input.addEventListener('input', calculateFinalGrade);
-        });
     });
-
-    function calculateFinalGrade(e) {
-        const row = e.target.closest('tr');
-        const tugas = parseFloat(row.querySelector('input[name*="nilai_tugas"]').value) || 0;
-        const uts = parseFloat(row.querySelector('input[name*="nilai_uts"]').value) || 0;
-        const uas = parseFloat(row.querySelector('input[name*="nilai_uas"]').value) || 0;
-
-        const akhir = (tugas * 0.3) + (uts * 0.3) + (uas * 0.4);
-        row.querySelector('.nilai-akhir').value = akhir.toFixed(2);
-    }
 
     // Form submission
     document.getElementById('bulkGradesForm').addEventListener('submit', function(e) {

@@ -33,8 +33,7 @@ class StudentController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('nis', 'like', "%{$search}%")
-                    ->orWhere('nisn', 'like', "%{$search}%");
+                    ->orWhere('nis', 'like', "%{$search}%");
             });
         }
 
@@ -58,16 +57,15 @@ class StudentController extends Controller
      */
     public function create(Request $request)
     {
-        $programId = $request->get('program', null);
-        $program = $programId ? Program::find($programId) : null;
-
-        $classes = SchoolClass::orderBy('name')->get();
+        // Get all classes with their programs
+        $classes = SchoolClass::with('program')->orderBy('name')->get();
+        
         $years = SchoolYear::orderBy('year')->get();
         $semesters = Semester::orderBy('name')->get();
         $subjects = Subject::orderBy('name')->get();
         $teachers = Teacher::orderBy('name')->get();
 
-        return view('students.create', compact('program', 'programId', 'classes', 'years', 'semesters', 'subjects', 'teachers'));
+        return view('students.create', compact('classes', 'years', 'semesters', 'subjects', 'teachers'));
     }
 
     /**
@@ -77,7 +75,6 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'nis' => 'required|unique:students|digits_between:6,20',
-            'nisn' => 'nullable|digits:10',
             'name' => 'required|string|max:255',
             'gender' => 'required|in:L,P',
             'birth_date' => 'required|date',
@@ -85,18 +82,20 @@ class StudentController extends Controller
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
             'parent_name' => 'nullable|string|max:255',
-            'parent_phone' => 'nullable|string|max:20',
-            'program_id' => 'nullable|exists:programs,id',
+            'class_id' => 'required|exists:classes,id',
+            'graduation_year' => 'required|integer|min:' . date('Y') . '|max:' . (date('Y') + 10),
             'grades' => 'nullable|array',
             'grades.*.subject_id' => 'nullable|exists:subjects,id',
-            'grades.*.teacher_id' => 'nullable|exists:teachers,id',
             'grades.*.class_id' => 'nullable|exists:classes,id',
             'grades.*.school_year_id' => 'nullable|exists:school_years,id',
             'grades.*.semester_id' => 'nullable|exists:semesters,id',
-            'grades.*.nilai_tugas' => 'nullable|numeric|min:0|max:100',
-            'grades.*.nilai_uts' => 'nullable|numeric|min:0|max:100',
-            'grades.*.nilai_uas' => 'nullable|numeric|min:0|max:100',
+            'grades.*.nilai' => 'nullable|numeric|min:0|max:100',
         ]);
+        
+        // Get program_id from selected class
+        $schoolClass = SchoolClass::find($validated['class_id']);
+        $validated['program_id'] = $schoolClass?->program_id;
+        
         $student = Student::create($validated);
 
         // Handle optional grades input (array of grades) - only create when subject present
@@ -104,20 +103,17 @@ class StudentController extends Controller
         foreach ($gradesInput as $g) {
             if (empty($g['subject_id'])) continue;
 
-            // skip if no scores provided
-            $hasScore = isset($g['nilai_tugas']) || isset($g['nilai_uts']) || isset($g['nilai_uas']);
+            // skip if no score provided
+            $hasScore = isset($g['nilai']) && $g['nilai'] !== '';
             if (!$hasScore) continue;
 
             \App\Models\Grade::create([
                 'student_id' => $student->id,
                 'subject_id' => $g['subject_id'],
-                'teacher_id' => $g['teacher_id'] ?? null,
                 'class_id' => $g['class_id'] ?? null,
                 'school_year_id' => $g['school_year_id'] ?? null,
                 'semester_id' => $g['semester_id'] ?? null,
-                'nilai_tugas' => $g['nilai_tugas'] ?? 0,
-                'nilai_uts' => $g['nilai_uts'] ?? 0,
-                'nilai_uas' => $g['nilai_uas'] ?? 0,
+                'nilai' => (float)$g['nilai'],
             ]);
         }
 
@@ -130,7 +126,9 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        $student->load(['grades.subject', 'grades.schoolClass', 'grades.semester']);
+        $student->load(['grades' => function($query) {
+            $query->with(['subject', 'schoolClass', 'semester', 'schoolYear']);
+        }]);
         return view('students.show', compact('student'));
     }
 
@@ -139,7 +137,10 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        // Get all classes with their programs
+        $classes = SchoolClass::with('program')->orderBy('name')->get();
+        
+        return view('students.edit', compact('student', 'classes'));
     }
 
     /**
@@ -149,7 +150,6 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'nis' => 'required|digits_between:6,20|unique:students,nis,' . $student->id,
-            'nisn' => 'nullable|digits:10',
             'name' => 'required|string|max:255',
             'gender' => 'required|in:L,P',
             'birth_date' => 'required|date',
@@ -157,8 +157,13 @@ class StudentController extends Controller
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
             'parent_name' => 'nullable|string|max:255',
-            'parent_phone' => 'nullable|string|max:20',
+            'class_id' => 'required|exists:classes,id',
+            'graduation_year' => 'required|integer|min:' . date('Y') . '|max:' . (date('Y') + 10),
         ]);
+
+        // Get program_id from selected class
+        $schoolClass = SchoolClass::find($validated['class_id']);
+        $validated['program_id'] = $schoolClass?->program_id;
 
         $student->update($validated);
 

@@ -1,219 +1,327 @@
-@extends('layouts.auth')
-
-@section('title', 'Login - Sistem Informasi Rapor')
-
-@push('style')
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SMK SEHATI KARAWANG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #5DADE2 0%, #2980B9 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            overflow: hidden;
-        }
-        
-        /* Animated Background Elements */
-        .bg-circles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
-        
-        .circle {
-            position: absolute;
-            display: block;
-            list-style: none;
-            width: 20px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            animation: animate 25s linear infinite;
-            bottom: -150px;
-            border-radius: 50%;
-        }
-
-        .circle:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
-        .circle:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
-        .circle:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
-        .circle:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
-        .circle:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
-        .circle:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
-        .circle:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
-        .circle:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
-        .circle:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
-        .circle:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
-
-        @keyframes animate {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
-            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+            font-family: 'Poppins', sans-serif;
         }
 
         .login-container {
-            width: 100%;
-            max-width: 450px;
-            z-index: 1;
-            padding: 20px;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            padding: 40px;
+            background: white;
+            border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            color: #fff;
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            padding: 0;
+            position: relative;
+            z-index: 1;
         }
 
-        .login-header {
+        .login-wrapper {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .login-left {
+            background: linear-gradient(135deg, #5DADE2 0%, #2980B9 100%);
+            color: white;
+            padding: 50px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
+            width: 40%;
+            position: relative;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            z-index: 1;
+        }
+
+        .login-left > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .school-logo {
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 30px;
+            overflow: hidden;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .school-logo img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
         }
 
-        .login-header h3 {
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-            font-size: 1.3rem;
-            line-height: 1.4;
+        .school-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .login-header p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
+        .school-subtitle {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
 
-        .form-floating > label {
-            color: #6c757d;
+        .login-features {
+            text-align: left;
+            font-size: 13px;
+            opacity: 0.9;
+            list-style: none;
+            padding: 0;
         }
 
-        .form-floating > .form-control {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 10px;
-            padding-left: 20px;
+        .login-features li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
         }
 
-        .form-floating > .form-control:focus {
-            background: #fff;
-            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+        .login-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
         }
 
-        .form-floating > .form-control.is-invalid {
-            border: 2px solid #ff6b6b;
-            background-image: none;
+        .login-right {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 60%;
+            background: white;
         }
 
-        .invalid-feedback {
-            color: #ffb8b8;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            padding-left: 10px;
+        .login-form h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .login-form .subtitle {
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-group input {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #5DADE2;
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+            outline: none;
         }
 
         .btn-login {
-            background: linear-gradient(to right, #f83600 0%, #f9d423 100%);
+            background: linear-gradient(135deg, #5DADE2 0%, #2980B9 100%);
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 12px;
             font-weight: 600;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #fff;
+            color: white;
+            font-size: 16px;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(248, 54, 0, 0.4);
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(248, 54, 0, 0.6);
-            color: #fff;
+            box-shadow: 0 8px 20px rgba(93, 173, 226, 0.3);
+            color: white;
         }
 
         .login-footer {
             text-align: center;
             margin-top: 25px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: #999;
+            font-size: 14px;
         }
 
         .login-footer a {
-            color: #fff;
-            font-weight: 600;
+            color: #5DADE2;
             text-decoration: none;
-            transition: opacity 0.3s ease;
+            font-weight: 600;
         }
 
         .login-footer a:hover {
-            opacity: 0.8;
+            color: #2980B9;
             text-decoration: underline;
         }
+
+        .password-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .forgot-pwd-link {
+            font-size: 13px;
+            color: #5DADE2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-pwd-link:hover {
+            text-decoration: underline;
+            color: #764ba2;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .login-left, .login-right {
+                width: 100%;
+            }
+
+            .login-left {
+                min-height: 250px;
+            }
+
+            .login-form h1 {
+                font-size: 24px;
+            }
+        }
     </style>
-@endpush
-
-@section('main')
-    <div class="bg-circles">
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-    </div>
-
+</head>
+<body>
     <div class="login-container">
-        <div class="glass-card">
-            <div class="login-header">
-                <h3>SELAMAT DATANG DI BUKU INDUK REGISTER PESERTA DIDIK</h3>
-                <p>Silakan login untuk melanjutkan</p>
+        <div class="login-wrapper">
+            <div class="login-left">
+                <div class="school-logo">
+                    <img src="/img/logo.png" alt="Logo Sekolah">
+                </div>
+                <div class="school-name">SMK SEHATI KARAWANG</div>
+                <div class="school-subtitle">
+                    Jl. Raya Kosambi – Telagasari, Desa Pancawati<br>
+                    Kec. Klari, Kab. Karawang, Provinsi Jawa Barat (41371)
+                </div>
+                <ul class="login-features">
+                    <li>Kelola nilai siswa dengan mudah</li>
+                    <li>Pantau perkembangan pembelajaran</li>
+                    <li>Laporan real-time yang akurat</li>
+                    <li>Akses dari mana saja, kapan saja</li>
+                </ul>
             </div>
 
-            <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate="">
-                @csrf
-                <div class="form-floating mb-4">
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="name@example.com" required tabindex="1">
-                    <label for="email"><i class="bi bi-envelope-fill me-2"></i>Email Address</label>
-                    @error('email')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
+            <div class="login-right">
+                <div class="login-form">
+                    <h1>Buku Induk Register</h1>
+                    <p class="subtitle">Silakan masuk dengan akun Anda</p>
 
-                <div class="form-floating mb-4">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required tabindex="2">
-                    <label for="password"><i class="bi bi-lock-fill me-2"></i>Password</label>
-                    <div class="invalid-feedback">
-                        Tolong masukkan password Anda
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}<br>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('login.store') }}">
+                        @csrf
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input id="email" type="email" 
+                                class="form-control @error('email') is-invalid @enderror"
+                                value="{{ old('email') }}" name="email" 
+                                placeholder="Masukkan alamat email Anda" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input id="password" type="password" 
+                                class="form-control @error('password') is-invalid @enderror" 
+                                name="password" placeholder="Masukkan password Anda" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-login">
+                            Masuk
+                        </button>
+                    </form>
+
+                    <div class="login-footer">
+                        Hubungi <strong>Kepala Sekolah</strong> untuk membuat akun baru
                     </div>
                 </div>
-
-                <div class="d-grid mt-5">
-                    <button type="submit" class="btn btn-login btn-block" tabindex="4">
-                        Login <i class="bi bi-box-arrow-in-right ms-2"></i>
-                    </button>
-                </div>
-            </form>
-
-            <div class="login-footer">
-                Belum punya akun? <a href="auth-register.html">Daftar sekarang</a>
             </div>
         </div>
     </div>
-@endsection
-
-@push('scripts')
-@endpush
+</body>
+</html>
